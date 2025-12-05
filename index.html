@@ -1,0 +1,1139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1894.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.7px Arial; color: #000000; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.7px Arial; color: #000000; -webkit-text-stroke: #000000; min-height: 16.0px}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 14.7px 'Apple Color Emoji'; font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="es"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Inventario SKU (Vanguardista)&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Carga de Tailwind CSS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Librerías para exportar a PDF --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Se mantiene html2canvas por si se necesita para gráficos futuros, pero se ignora para la tabla --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- NUEVA LIBRERÍA: jsPDF-AutoTable para generación de tablas vectoriales de alta calidad --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Carga de Lucide Icons (para el icono de exportación) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Definición de la paleta de colores Vanguardista */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-primary-green { background-color: #577161; } /* Verde Olivo Oscuro (Accento principal) */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-primary-hover { background-color: #3E4D45; } /* Verde más oscuro (Hover) */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-text-dark { color: #3C3231; } /* Marrón Espresso (Texto principal) */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-card-bg { background-color: #FFFFFF; } /* Fondo de Tarjeta */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-base-bg { background-color: #F7F7F7; } /* Fondo de la aplicación */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.color-border { border-color: #E5E5E5; } /* Borde suave */</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body { font-family: 'Inter', sans-serif; }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Ocultar barra de desplazamiento en la tabla para estética */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.scrollable-table::-webkit-scrollbar { display: none; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.scrollable-table { -ms-overflow-style: none; scrollbar-width: none; }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Estilo del Canvas */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#ventasPieCanvas {<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>/* Se hace más ancho para acomodar el gráfico y la leyenda */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 100%;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: auto;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#stockCanvas { border: 1px solid #E5E5E5; border-radius: 12px; }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Clases de Mensajes basadas en la paleta */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.success { background-color: #A5C9B3; color: #3E4D45; border: 1px solid #88A796; } /* Verde claro */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.error { background-color: #ffe0e0; color: #9a1f26; border: 1px solid #ffb3b3; } /* Rojo estándar, contrastante */</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Estilo para el input de archivo - Moderno */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#csv-file-input::-webkit-file-upload-button {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>visibility: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#csv-file-input::before {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>content: 'Seleccionar Archivo CSV';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: inline-block;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #f0f0f0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid #ddd;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>outline: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>white-space: nowrap;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 14px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #3C3231;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#csv-file-input:hover::before {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-color: #577161;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #e9e9e9;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Sombra personalizada para un efecto 'impactante y sutil' (tipo Apple) */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.shadow-custom {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.hover\:shadow-custom:hover {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12), 0 6px 15px rgba(0, 0, 0, 0.07);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Modal y Overlays */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.modal-overlay {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: fixed;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>top: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>left: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(0, 0, 0, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>z-index: 1000;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.modal-content {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 2rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 1rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 90%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 400px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body class="color-base-bg color-text-dark"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Inicializar iconos de Lucide al cargar la página --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (window.lucide) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>window.lucide.createIcons();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="container max-w-7xl mx-auto p-4 md:p-10"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- HEADER CARD (Modern Apple Style - Impactante y Sutil) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="color-card-bg p-8 shadow-custom rounded-3xl mb-12 border color-border transition-all duration-300 transform hover:shadow-custom"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;header class="text-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>style="background-image: linear-gradient(135deg, #3E4D45, #577161);"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>Inventario SKUs &lt;span class="text-green-600"&gt;</span><span class="s2">🌿</span><span class="s1">&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/h1&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p class="text-xl text-gray-600 mt-3 font-light max-w-2xl mx-auto"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>Gestión de stock en tiempo ArMaly</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/header&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- Tarjeta PASO 1: CARGA DE ARCHIVO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="file-upload-card" class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2 class="text-2xl font-semibold mb-5 text-gray-800"&gt;1. Carga de Inventario (.CSV)&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="text-gray-600 mb-5 text-base"&gt;La estructura requerida es: &lt;code class="bg-gray-100 p-1 rounded-md text-sm"&gt;SKU, Nombre, Descripción Larga, Stock Inicial, Stock Vendido, Precio Venta&lt;/code&gt;.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;input type="file" id="csv-file-input" accept=".csv" class="w-full p-3 border color-border rounded-lg focus:border-green-700 transition duration-150" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div id="mensaje-carga" class="message-box mt-5 p-4 rounded-xl font-medium"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN (OCULTO HASTA QUE SE CARGUEN LOS DATOS) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="main-app-content" class="hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- Tarjeta Principal: VENTA RÁPIDA --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div id="venta-area" class="color-card-bg p-8 shadow-xl rounded-2xl lg:col-span-2 border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-2xl font-semibold text-gray-800 mb-5"&gt;2. Venta Rápida / Consulta&lt;/h2&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="text" id="sku-input" placeholder="Ingresa el SKU (ej. 1, 2 o 3) para consultar y agregar." autofocus</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>class="w-full p-4 text-xl border color-border rounded-xl focus:border-green-700 focus:ring-1 focus:ring-[#577161] transition duration-150 mb-5 text-gray-700"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;button onclick="registrarVentaDesdeInput()"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>class="flex items-center justify-center w-full py-4 color-primary-green text-white font-bold rounded-xl shadow-lg hover:color-primary-hover transition duration-200 active:bg-green-800 text-lg"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="mr-3 text-xl"&gt;</span><span class="s2">🚀</span><span class="s1">&lt;/span&gt; CONFIRMAR VENTA (+1)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="consulta-resultado" class="result-box mt-6 p-4 bg-gray-50 border color-border rounded-xl text-base text-gray-700 min-h-[4rem]"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;!-- Resultado de la consulta se muestra aquí --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;p class="text-gray-500"&gt;Consulta el estado del producto ingresando un SKU.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="mensaje" class="message-box mt-5 p-4 rounded-xl font-medium"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- Tarjeta Secundaria: CANVAS (REPORTE VISUAL) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div id="canvas-area" class="color-card-bg p-8 shadow-xl rounded-2xl border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-2xl font-semibold text-gray-800 mb-5"&gt;3. Stock Disponible (Visual)&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Se muestra el índice inicial de los productos mostrados --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;p id="visual-filter-info" class="text-sm text-gray-500 mb-3 text-center"&gt;Mostrando productos 1-10.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;canvas id="stockCanvas" width="400" height="200" class="w-full"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- SECCIÓN DE REPORTE DE VENTAS (Optimización de Espacio Aplicada) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold text-gray-800 mb-6"&gt;4. Reporte Financiero y de Ventas&lt;/h2&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Pie Chart Ventas con Leyenda a la Derecha (Optimizado) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="lg:col-span-2 flex flex-col md:flex-row bg-gray-50 rounded-xl overflow-hidden p-3 border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="flex-grow"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                             </span>&lt;h3 class="text-xl font-medium mb-2 text-center text-gray-700 md:text-left md:ml-4 pt-1"&gt;Distribución de Ingresos por Producto&lt;/h3&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div class="flex justify-center items-center h-full relative p-2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;!-- El canvas ahora tiene espacio suficiente para el gráfico Y la leyenda al lado --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;canvas id="ventasPieCanvas" width="500" height="250" class="w-full"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;!-- Contenedor para Métricas Clave y Leyenda (al lado del Canvas) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="w-full md:w-64 flex-shrink-0 p-4 border-t md:border-t-0 md:border-l color-border bg-white rounded-b-xl md:rounded-l-none md:rounded-r-xl"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;!-- BLOQUE DE MÉTRICAS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div class="mb-6 text-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;p class="text-gray-600 font-medium text-sm mb-1"&gt;Ingreso Total&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;span id="total-revenue-amount" class="font-bold text-3xl text-[#3E4D45] block"&gt;$0.00&lt;/span&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;!-- NUEVA MÉTRICA: Ticket Promedio --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div id="ticket-promedio-display" class="mt-2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;p class="text-gray-500 text-xs"&gt;Ticket Promedio:&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;span id="ticket-promedio-amount" class="font-semibold text-lg text-gray-700 block"&gt;$0.00&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;!-- FIN BLOQUE DE MÉTRICAS --&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div id="pie-legend-container" class="space-y-1 text-sm pt-4 border-t color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;!-- La leyenda se inyectará aquí en HTML --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;p class="text-gray-500 text-center"&gt;Datos de la leyenda...&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Tabla de Ventas (Optimizado para ocupar el espacio restante) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="lg:col-span-1 bg-gray-50 rounded-xl overflow-hidden p-3 border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-medium mb-4 text-center text-gray-700"&gt;Detalle de Ventas Históricas&lt;/h3&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="overflow-x-auto scrollable-table max-h-96"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;table id="ventas-tabla" class="min-w-full divide-y divide-gray-200"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;thead class="bg-gray-100 sticky top-0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;tr&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Producto&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Cant.&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Total ($)&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/tr&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/thead&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;tbody class="bg-white divide-y divide-gray-200"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;!-- Datos de ventas aquí --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/tbody&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/table&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- Tarjeta de la Tabla de Inventario --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="color-card-bg p-8 shadow-xl rounded-2xl border color-border"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex justify-between items-center mb-6"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-2xl font-semibold text-gray-800"&gt;5. Inventario Detallado en Tiempo Real&lt;/h2&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- BOTÓN DE EXPORTACIÓN A PDF (Minimalista y Sutil) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Usa un icono 'save' y colores de bajo contraste --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;button<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>onclick="mostrarModalContrasena()"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>title="Exportar Reporte a PDF (Contraseña: armaly)"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>class="p-2 rounded-full<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                               </span>text-gray-400 bg-gray-50<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                               </span>transition-all duration-200<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                               </span>hover:text-gray-700 hover:bg-gray-200<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                               </span>focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="save" class="w-5 h-5"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- El ID inventario-data-container ya no es necesario para html2canvas, pero se mantiene para la estructura. --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div id="inventario-data-container"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="overflow-x-auto scrollable-table max-h-[30rem]"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;table id="inventario-tabla" class="min-w-full divide-y divide-gray-200"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;thead class="bg-gray-100 sticky top-0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;tr&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;SKU&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Nombre&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Stock Inicial&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Vendido&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Stock Disponible&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"&gt;Precio&lt;/th&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/tr&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/thead&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;tbody class="bg-white divide-y divide-gray-200 text-gray-700"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;!-- Los datos se inyectarán aquí con JavaScript --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/tbody&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/table&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Mensaje si la tabla está vacía --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;p id="empty-message" class="text-center text-gray-500 py-6 hidden"&gt;No hay productos en el inventario.&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- MODAL DE CONTRASEÑA (Oculto por defecto) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="password-modal" class="modal-overlay hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="modal-content"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h3 class="text-xl font-bold mb-4 text-gray-800"&gt;Exportar Inventario&lt;/h3&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="text-gray-600 mb-4"&gt;Por favor, introduce la contraseña de seguridad para exportar el reporte a PDF:&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;input type="password" id="password-input" placeholder="Contraseña"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                   </span>class="w-full p-3 border color-border rounded-lg mb-4 focus:border-red-600 focus:ring-1 focus:ring-red-600 transition duration-150"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div id="modal-error-message" class="text-red-500 text-sm mb-4 hidden"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="flex justify-end space-x-3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;button onclick="ocultarModalContrasena()"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-150"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>Cancelar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;button onclick="verificarContrasenaExportar()"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-150"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>Confirmar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- Variables Globales ---</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const STORAGE_KEY = 'inventario_skus_apple_mvp';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const MAX_VISUAL_ITEMS = 10; // Nuevo: Límite de productos a mostrar en el gráfico visual</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let visualStartIndex = 0;<span class="Apple-converted-space">    </span>// Nuevo: Índice inicial para el subconjunto de productos</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let inventario = {};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const CORRECT_PASSWORD = 'armaly'; // Contraseña para la exportación</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- FUNCIONES DE PERSISTENCIA Y CARGA ---</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Parsea la cadena CSV y la convierte en el objeto inventario.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function parsearCSV(csvText) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const lines = csvText.trim().split('\n');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const data = {};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (lines.length &lt;= 1) return data; // No hay datos además de la cabecera</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 1; i &lt; lines.length; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Usamos una expresión regular simple para manejar comas dentro de comillas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const values = lines[i].match(/(".*?"|[^,]+)/g);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Asegurar que values no sea null y tenga suficientes elementos</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (values &amp;&amp; values.length &gt;= 6) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const cleanValues = values.map(val =&gt; val.trim().replace(/"/g, ''));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const sku = cleanValues[0].toUpperCase();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>data[sku] = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>nombre: cleanValues[1],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>stock_inicial: parseInt(cleanValues[3], 10) || 0,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>stock_vendido: parseInt(cleanValues[4], 10) || 0,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>precio_venta: parseFloat(cleanValues[5]) || 0.00</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return data;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Carga el inventario de localStorage.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Decide si mostrar la aplicación o el formulario de carga.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function cargarInventario() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const storedData = localStorage.getItem(STORAGE_KEY);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (storedData) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>inventario = JSON.parse(storedData);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Si se carga algo, mostrar la app</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (Object.keys(inventario).length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>// Reiniciar el índice visual al cargar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>visualStartIndex = 0;<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>mostrarMensaje('Inventario cargado desde la última sesión.', 'success');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>toggleAppView(true);<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>renderizarTabla();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>renderizarTablaVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>// Llamada con setTimeout para que Canvas tenga dimensiones correctas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>dibujarCanvasReporte();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>dibujarPieChartVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>// Re-renderizar iconos de Lucide (si no se hizo automáticamente)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>if (window.lucide) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>window.lucide.createIcons();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, 50);<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} catch (e) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>console.error("Error al parsear localStorage:", e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Ignorar error de JSON y forzar la carga por archivo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Si no hay datos válidos, mostrar el formulario de carga</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>mostrarMensajeCarga('Por favor, carga un archivo CSV para iniciar el inventario.', 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>toggleAppView(false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Maneja el evento de selección de archivo CSV.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function handleFileSelect(event) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const file = event.target.files[0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!file) return;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Mostrar nombre del archivo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>mostrarMensajeCarga(`Archivo seleccionado: ${file.name}. Procesando...`, 'success');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const reader = new FileReader();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>reader.onload = function(e) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const csvContent = e.target.result;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// 1. Parsear el nuevo contenido CSV</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const newInventory = parsearCSV(csvContent);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (Object.keys(newInventory).length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>mostrarMensajeCarga('El archivo CSV está vacío o el formato es incorrecto.', 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// 2. Sobrescribir el inventario, guardar y actualizar UI</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>inventario = newInventory;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>visualStartIndex = 0; // Resetear filtro visual al cargar nuevo inventario</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>guardarInventario();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensaje(`¡Inventario cargado exitosamente! ${Object.keys(inventario).length} productos inicializados.`, 'success');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>toggleAppView(true); // Mostrar aplicación principal primero</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>renderizarTabla();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>renderizarTablaVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Llamada con setTimeout para que Canvas tenga dimensiones correctas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>dibujarCanvasReporte();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>dibujarPieChartVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Re-renderizar iconos de Lucide</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (window.lucide) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>window.lucide.createIcons();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, 50);<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>reader.onerror = function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensajeCarga('Error al leer el archivo.', 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>reader.readAsText(file);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Alterna la visibilidad entre la carga del archivo y la aplicación principal.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function toggleAppView(isLoaded) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const mainContent = document.getElementById('main-app-content');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const fileSection = document.getElementById('file-upload-card');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (isLoaded &amp;&amp; Object.keys(inventario).length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>fileSection.classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mainContent.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>fileSection.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mainContent.classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Guarda el objeto inventario en localStorage.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function guardarInventario() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>localStorage.setItem(STORAGE_KEY, JSON.stringify(inventario));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- LÓGICA DE NEGOCIO ---</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Calcula el stock disponible para un SKU dado.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function calcularStockDisponible(sku) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const p = inventario[sku];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return p ? p.stock_inicial - p.stock_vendido : 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Busca y muestra la información del producto en el área de consulta.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function consultarProducto(sku) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const p = inventario[sku];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const resultadoDiv = document.getElementById('consulta-resultado');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!sku) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                 </span>resultadoDiv.innerHTML = '&lt;p class="text-gray-500"&gt;Consulta el estado del producto ingresando un SKU.&lt;/p&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                 </span>return null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!p) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>resultadoDiv.innerHTML = `&lt;p class="text-red-600 font-semibold"&gt;</span><span class="s2">❌</span><span class="s1"> SKU &lt;b&gt;${sku}&lt;/b&gt; no encontrado en el inventario.&lt;/p&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const stockDisponible = calcularStockDisponible(sku);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const stockColor = stockDisponible &lt;= 5 ? 'text-red-600' : 'text-[#577161]';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>resultadoDiv.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p&gt;&lt;b&gt;Producto:&lt;/b&gt; &lt;span class="text-gray-900"&gt;${p.nombre}&lt;/span&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p&gt;&lt;b&gt;Precio:&lt;/b&gt; &lt;span class="text-gray-900"&gt;$${p.precio_venta.toFixed(2)}&lt;/span&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p&gt;&lt;b&gt;Stock Disponible:&lt;/b&gt; &lt;span class="${stockColor} font-bold text-lg"&gt;${stockDisponible} Unidades&lt;/span&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return p;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Registra una venta, actualiza el stock, guarda y renderiza la vista.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function registrarVenta(sku) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const p = inventario[sku];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!p) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensaje(`ERROR: SKU ${sku} no existe.`, 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const stockActual = calcularStockDisponible(sku);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (stockActual &lt;= 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensaje(`</span><span class="s2">⛔</span><span class="s1"> VENTA BLOQUEADA: ${p.nombre} agotado. Stock: 0.`, 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Actualizar stock</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>p.stock_vendido += 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>guardarInventario();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Lógica de reemplazo dinámico para el gráfico visual (Punto clave)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>actualizarIndiceVisual(sku);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const nuevoStock = calcularStockDisponible(sku);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>mostrarMensaje(`</span><span class="s2">🎉</span><span class="s1"> Venta de ${p.nombre} registrada. Stock restante: ${nuevoStock}.`, 'success');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Actualizar vistas de consulta, tablas y gráficos</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>consultarProducto(sku);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>renderizarTabla();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>renderizarTablaVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>dibujarCanvasReporte();<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>dibujarPieChartVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* NUEVA FUNCIÓN: Actualiza el índice visual si el producto vendido</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* está en el rango visible y su stock llegó a cero.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function actualizarIndiceVisual(skuVendido) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const skus = Object.keys(inventario);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const indexVendido = skus.indexOf(skuVendido);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 1. Determinar si el producto vendido está en el rango visible</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (indexVendido &gt;= visualStartIndex &amp;&amp; indexVendido &lt; visualStartIndex + MAX_VISUAL_ITEMS) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// 2. Verificar si su stock disponible acaba de llegar a CERO</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (calcularStockDisponible(skuVendido) === 0) {</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// 3. Buscar el siguiente producto NO VISIBLE con stock &gt; 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let nextIndex = visualStartIndex + MAX_VISUAL_ITEMS;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let foundReplacement = false;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Buscar en el resto del inventario</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>while (nextIndex &lt; skus.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>if (calcularStockDisponible(skus[nextIndex]) &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>foundReplacement = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>break;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>nextIndex++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// 4. Si encontramos un reemplazo y el producto vendido es el primero visible,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// O si el producto vendido es el último visible (o el que se agotó),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// movemos el índice de inicio para hacer espacio al nuevo producto.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// La forma más simple de garantizar que el nuevo producto entre es:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (foundReplacement &amp;&amp; visualStartIndex &lt; skus.length - MAX_VISUAL_ITEMS) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>visualStartIndex++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>mostrarMensaje(`Filtro visual avanzado: Se agotó un producto. Mostrando nuevo rango.`, 'success');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Si no se encuentra reemplazo, y el índice está en 0, no hacer nada.<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Si el índice ya se movió, mantendrá el último subconjunto.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Maneja la entrada del SKU y lanza la venta al presionar el botón o Enter.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function registrarVentaDesdeInput() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const input = document.getElementById('sku-input');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const sku = input.value.trim().toUpperCase();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!sku) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensaje('Por favor, ingresa un SKU válido.', 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>registrarVenta(sku);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>input.value = ''; // Limpiar campo después de la venta</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Escuchar la tecla Enter en el campo de texto para la venta rápida</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const input = document.getElementById('sku-input');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (input) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Listener para confirmar venta al presionar Enter</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>input.addEventListener('keydown', (event) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (event.key === 'Enter') {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>event.preventDefault(); // Evitar el envío del formulario</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>registrarVentaDesdeInput();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// NUEVO: Implementación de la búsqueda automática/consulta en tiempo real (evento 'input')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>input.addEventListener('input', (event) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const sku = event.target.value.trim().toUpperCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>consultarProducto(sku);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- FUNCIONES DE RENDERIZADO Y CANVAS ---</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Genera colores de la paleta para el Pie Chart.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function getRandomColor(index) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Paleta de colores más moderna y coherente con el esquema verde/gris/marrón</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const colors = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#577161', // Verde Olivo Oscuro</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#A5C9B3', // Verde Claro</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#86736F', // Taupe/Marrón Grisáceo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#8B959A', // Gris Medio</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#3C3231', // Marrón Espresso</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#6D797C', // Gris Oscuro</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'#88A796', // Verde Medio</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return colors[index % colors.length];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Dibuja un gráfico circular (Pie Chart) que refleja la distribución de ingresos por producto</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* y genera la leyenda en un contenedor HTML separado.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function dibujarPieChartVentas() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvas = document.getElementById('ventasPieCanvas');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalRevenueEl = document.getElementById('total-revenue-amount'); // Modificado para el nuevo ID</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const ticketPromedioEl = document.getElementById('ticket-promedio-amount'); // Nuevo elemento</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const legendContainer = document.getElementById('pie-legend-container');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!canvas || !totalRevenueEl || !ticketPromedioEl || !legendContainer) return;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const ctx = canvas.getContext('2d');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Usar getBoundingClientRect del contenedor padre del canvas para calcular el tamaño real</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const containerRect = canvas.parentElement.getBoundingClientRect();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Estimamos el ancho para el gráfico (excluyendo el área de la leyenda)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvasWidth = containerRect.width;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvasHeight = canvas.height;<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Asegurar dimensiones correctas en el atributo del canvas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>canvas.width = canvasWidth;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>canvas.height = canvasHeight;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.clearRect(0, 0, canvasWidth, canvasHeight);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>legendContainer.innerHTML = ''; // Limpiar leyenda HTML</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const salesData = Object.keys(inventario)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>.map(sku =&gt; ({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>nombre: inventario[sku].nombre,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>revenue: inventario[sku].stock_vendido * inventario[sku].precio_venta,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>items_sold: inventario[sku].stock_vendido</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>.filter(item =&gt; item.revenue &gt; 0);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalRevenue = salesData.reduce((sum, item) =&gt; sum + item.revenue, 0);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 1. CÁLCULO DE MÉTRICAS CLAVE</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalItemsSold = salesData.reduce((sum, item) =&gt; sum + item.items_sold, 0);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let ticketPromedio = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (totalItemsSold &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Fórmula: Ingreso Total / Número de Transacciones (Unidades Vendidas)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ticketPromedio = totalRevenue / totalItemsSold;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 2. ACTUALIZACIÓN DEL DOM DE MÉTRICAS</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalRevenueEl.textContent = `$${totalRevenue.toFixed(2)}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ticketPromedioEl.textContent = `$${ticketPromedio.toFixed(2)}`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Manejo de caso sin ventas para el Canvas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (salesData.length === 0 || totalRevenue &lt;= 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Reiniciar visualizaciones a cero</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>totalRevenueEl.textContent = '$0.00';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ticketPromedioEl.textContent = '$0.00';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>legendContainer.innerHTML = '&lt;p class="text-gray-500 text-center"&gt;Sin ventas registradas.&lt;/p&gt;';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Dibujar un mensaje de placeholder en el canvas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = '#F0F0F0';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillRect(0, 0, canvasWidth, canvasHeight);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = '#9ca3af';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.textAlign = 'center';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.font = '16px Inter';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillText('Sin datos de ventas', canvasWidth / 2, canvasHeight / 2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 3. DIBUJO DEL GRÁFICO CIRCULAR</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --------------------------------------------------------</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Calcular el espacio real que debe ocupar el gráfico circular</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const graphContainerWidth = canvasWidth;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const centerX = graphContainerWidth * 0.45; // Centrar un poco a la izquierda<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const centerY = canvasHeight / 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const radius = Math.max(0, Math.min(centerX, centerY) - 10);<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (radius === 0) return;<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let currentAngle = 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --- DIBUJAR GRÁFICO ---</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>salesData.forEach((item, index) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const sliceAngle = (item.revenue / totalRevenue) * 2 * Math.PI;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (!isFinite(sliceAngle)) return;<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const startAngle = currentAngle;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const endAngle = currentAngle + sliceAngle;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const color = getRandomColor(index);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const percentage = (item.revenue / totalRevenue) * 100;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Draw Pie Slice</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.beginPath();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.moveTo(centerX, centerY);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.arc(centerX, centerY, radius, startAngle, endAngle);<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.closePath();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = color;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fill();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Draw Slice Border</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.strokeStyle = '#F7F7F7';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.lineWidth = 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.stroke();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Draw Percentage Label (only for slices &gt; 5%)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const midAngle = startAngle + sliceAngle / 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const labelRadius = radius * 0.8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const labelX = centerX + labelRadius * Math.cos(midAngle);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const labelY = centerY + labelRadius * Math.sin(midAngle);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (percentage &gt; 5) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.fillStyle = 'white';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.font = 'bold 12px Inter';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.textAlign = 'center';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.fillText(`${percentage.toFixed(0)}%`, labelX, labelY);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// --- CREAR LEYENDA HTML (para el contenedor de la derecha) ---</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const legendItem = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>legendItem.className = 'flex items-center justify-between text-gray-700';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>legendItem.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="flex items-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="w-3 h-3 rounded-full mr-2" style="background-color: ${color};"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="truncate"&gt;${item.nombre}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="font-semibold text-[#577161]"&gt;${percentage.toFixed(1)}%&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>legendContainer.appendChild(legendItem);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>currentAngle = endAngle;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Dibuja un gráfico de barras simple en el elemento CANVAS (Stock Disponible).</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* **FILTRADO:** Solo dibuja MAX_VISUAL_ITEMS (10) productos desde visualStartIndex.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function dibujarCanvasReporte() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvas = document.getElementById('stockCanvas');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!canvas) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const ctx = canvas.getContext('2d');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvasWidth = canvas.clientWidth;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const canvasHeight = canvas.clientHeight;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Seguridad: Verificar que el canvas tiene un tamaño visible antes de dibujar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (canvasWidth === 0 || canvasHeight === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>canvas.width = canvasWidth;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>canvas.height = canvasHeight;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.clearRect(0, 0, canvasWidth, canvasHeight);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const skus = Object.keys(inventario);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (skus.length === 0) return;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// --- APLICAR FILTRO DE 10 PRODUCTOS ---</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const displayedSkus = skus.slice(visualStartIndex, visualStartIndex + MAX_VISUAL_ITEMS);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 1. Actualizar el mensaje del filtro</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startDisplay = visualStartIndex + 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let endDisplay = visualStartIndex + displayedSkus.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (endDisplay &gt; skus.length) endDisplay = skus.length; // Ajustar si es el final</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const infoText = `Mostrando productos ${startDisplay}-${endDisplay} de ${skus.length}.`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const filterInfoEl = document.getElementById('visual-filter-info');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if(filterInfoEl) filterInfoEl.textContent = infoText;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 2. Preparar los datos filtrados</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const data = displayedSkus.map(sku =&gt; ({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>sku: sku,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>stock: calcularStockDisponible(sku)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}));</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const margin = 15;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const labelMargin = 25;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const plotHeight = canvasHeight - margin * 2 - labelMargin;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const plotWidth = canvasWidth - margin * 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const maxStock = Math.max(...data.map(d =&gt; d.stock), 1);<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.font = '11px Inter';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.textAlign = 'center';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalItems = data.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Asegurar que solo se dibujan 10 barras</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const barWidth = (plotWidth / MAX_VISUAL_ITEMS) * 0.6;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const spacing = (plotWidth / MAX_VISUAL_ITEMS) * 0.4;<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>data.forEach((item, index) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Posición X basada en el índice dentro del subconjunto (0 a 9)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const x = margin + index * (barWidth + spacing) + spacing / 2;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Asegurar que la altura es al menos 1px si hay stock para visibilidad</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const rawBarHeight = (item.stock / maxStock) * plotHeight;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const barHeight = item.stock &gt; 0 ? Math.max(1, rawBarHeight) : 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Dibujar barra</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const color = item.stock &lt;= 5 &amp;&amp; item.stock &gt; 0 ? '#EF4444' : (item.stock === 0 ? '#B0B0B0' : '#577161'); /* Rojo, Gris Agotado, o Verde primario */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = color;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillRect(x, canvasHeight - margin - labelMargin - barHeight, barWidth, barHeight);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Dibujar valor (stock)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = '#3C3231';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.font = 'bold 12px Inter';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Solo dibujar el valor si el stock es mayor a 0, o si es 0, dibujarlo abajo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (item.stock &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.fillText(item.stock, x + barWidth / 2, canvasHeight - margin - labelMargin - barHeight - 5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.fillStyle = '#B0B0B0';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>ctx.fillText('0', x + barWidth / 2, canvasHeight - margin - labelMargin - 50);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Dibujar etiqueta (SKU)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillStyle = '#6D797C';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.font = '11px Inter';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ctx.fillText(item.sku, x + barWidth / 2, canvasHeight - margin - 5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Dibujar eje X (línea base)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.beginPath();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.moveTo(margin, canvasHeight - margin - labelMargin);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.lineTo(canvasWidth - margin, canvasHeight - margin - labelMargin);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.strokeStyle = '#D1D5DB';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.lineWidth = 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>ctx.stroke();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Renderiza la tabla de productos vendidos (ahora más compacta).</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function renderizarTablaVentas() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const tbody = document.querySelector('#ventas-tabla tbody');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!tbody) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>tbody.innerHTML = '';<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const skus = Object.keys(inventario);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>skus.forEach(sku =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const p = inventario[sku];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const vendidos = p.stock_vendido;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (vendidos &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const revenue = vendidos * p.precio_venta;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const row = tbody.insertRow();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row.classList.add('hover:bg-gray-100');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Celdas (solo Producto, Cant. y Total)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row.insertCell().textContent = p.nombre;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const vendidosCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>vendidosCell.textContent = vendidos;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>vendidosCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Columna Total</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const totalCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>totalCell.innerHTML = `&lt;span class="font-bold text-[#577161]"&gt;$${revenue.toFixed(2)}&lt;/span&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>totalCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Aplicar estilos de Tailwind a las celdas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>Array.from(row.cells).forEach(cell =&gt; cell.classList.add('px-3', 'py-2', 'whitespace-nowrap', 'text-sm'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Renderiza la tabla de inventario en el HTML.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function renderizarTabla() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const tbody = document.querySelector('#inventario-tabla tbody');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!tbody) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>tbody.innerHTML = '';<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const skus = Object.keys(inventario);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const emptyMessage = document.getElementById('empty-message');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (skus.length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>emptyMessage.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>emptyMessage.classList.add('hidden');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>skus.forEach(sku =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const p = inventario[sku];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const stockDisponible = calcularStockDisponible(sku);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const row = tbody.insertRow();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Estilo de fila según el stock</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (stockDisponible &lt;= 5 &amp;&amp; stockDisponible &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row.classList.add('bg-yellow-50', 'hover:bg-yellow-100');<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else if (stockDisponible === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                     </span>row.classList.add('bg-red-50', 'hover:bg-red-100');<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row.classList.add('hover:bg-gray-50');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Celdas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>row.insertCell().textContent = sku;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>row.insertCell().textContent = p.nombre;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const inicialCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>inicialCell.textContent = p.stock_inicial;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>inicialCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const vendidoCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>vendidoCell.textContent = p.stock_vendido;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>vendidoCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Columna de Stock Disponible (resaltada)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const dispCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const stockColor = stockDisponible &lt;= 5 ? 'text-red-600' : 'text-[#577161]';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>dispCell.innerHTML = `&lt;span class="font-bold ${stockColor} text-base"&gt;${stockDisponible}&lt;/span&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>dispCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const precioCell = row.insertCell();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>precioCell.textContent = `$${p.precio_venta.toFixed(2)}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>precioCell.classList.add('text-right');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Aplicar estilos de Tailwind a las celdas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>Array.from(row.cells).forEach(cell =&gt; cell.classList.add('px-6', 'py-3', 'whitespace-nowrap', 'text-sm'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Muestra un mensaje temporal en el área de Venta/Consulta.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function mostrarMensaje(texto, tipo) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const div = document.getElementById('mensaje');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!div) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>div.textContent = texto;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>div.textContent = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>div.className = 'message-box mt-5 p-4 rounded-xl font-medium';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, 3500);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Muestra un mensaje temporal en el área de Carga de Archivo.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function mostrarMensajeCarga(texto, tipo) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const div = document.getElementById('mensaje-carga');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!div) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>div.textContent = texto;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>div.textContent = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>div.className = 'message-box mt-5 p-4 rounded-xl font-medium';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, 5000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- FUNCIONES DE MODAL DE CONTRASEÑA Y EXPORTACIÓN ---</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Muestra el modal para solicitar la contraseña antes de exportar.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function mostrarModalContrasena() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const modal = document.getElementById('password-modal');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const passwordInput = document.getElementById('password-input');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const errorMessage = document.getElementById('modal-error-message');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (Object.keys(inventario).length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>mostrarMensaje('No hay datos en el inventario para exportar.', 'error');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>errorMessage.classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>passwordInput.value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>modal.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Oculta el modal de contraseña.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function ocultarModalContrasena() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const modal = document.getElementById('password-modal');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>modal.classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Verifica la contraseña e inicia la exportación.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function verificarContrasenaExportar() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const passwordInput = document.getElementById('password-input');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const enteredPassword = passwordInput.value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const errorMessage = document.getElementById('modal-error-message');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (enteredPassword === CORRECT_PASSWORD) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ocultarModalContrasena();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>exportarInventarioPDF();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>errorMessage.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>errorMessage.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>passwordInput.value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>passwordInput.focus();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/**</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* Genera un reporte PDF de la tabla de inventario *directamente*</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>* utilizando jsPDF y el plugin AutoTable para calidad vectorial.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>*/</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function exportarInventarioPDF() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Usamos la librería window.jspdf ya cargada</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const { jsPDF } = window.jspdf;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>mostrarMensaje('Generando reporte PDF vectorial... Por favor espera.', 'success');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 1. Inicializar jsPDF</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const doc = new jsPDF('p', 'mm', 'a4'); // 'p' = portrait, 'mm' = milimetros</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 2. Título y Metadatos (Vectoriales)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.setFontSize(18);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.text("Reporte de Inventario SKU en Tiempo Real", 105, 15, null, null, "center");</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.setFontSize(10);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.text(`Fecha de Exportación: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 10, 25);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 3. Preparar Datos para AutoTable</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const headers = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>['SKU', 'Nombre', 'Stock Inicial', 'Vendido', 'Stock Disponible', 'Precio Venta']</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const tableData = Object.keys(inventario).map(sku =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const p = inventario[sku];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const stockDisponible = calcularStockDisponible(sku);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Formatear el precio con el símbolo $</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const precioFormateado = `$${p.precio_venta.toFixed(2)}`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>sku,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>p.nombre,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>p.stock_inicial,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>p.stock_vendido,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>stockDisponible,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>precioFormateado</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 4. Generar la tabla usando AutoTable</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Nota: El plugin autotable (ya cargado) se adjunta a la instancia de jspdf.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.autoTable({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>startY: 35, // Comenzar debajo del encabezado</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>head: headers,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>body: tableData,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>theme: 'striped', // Un tema limpio y profesional</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>styles: {<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>fontSize: 9,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>cellPadding: 3,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>halign: 'center' // Centrar el contenido de las celdas por defecto</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>headStyles: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>fillColor: [87, 113, 97], // #577161 - Nuestro color primario verde</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>textColor: [255, 255, 255],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>fontStyle: 'bold'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>columnStyles: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Sobrescribir la alineación para las columnas de texto y números</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>0: { halign: 'left', cellWidth: 20 }, // SKU</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>1: { halign: 'left', cellWidth: 45 }, // Nombre</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>2: { halign: 'right' }, // Stock Inicial</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>3: { halign: 'right' }, // Vendido</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>4: { halign: 'right', fontStyle: 'bold' }, // Disponible (resaltado)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>5: { halign: 'right' } // Precio Venta</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>didDrawPage: function (data) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Pie de página (ej. número de página)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>doc.setFontSize(8);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const pageCount = doc.internal.getNumberOfPages();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>doc.text("Página " + doc.internal.getCurrentPageInfo().pageNumber + " de " + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 5. Descargar el PDF</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>doc.save(`Reporte_Inventario_Vectorial_${new Date().toISOString().slice(0, 10)}.pdf`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>mostrarMensaje('</span><span class="s2">✅</span><span class="s1"> Reporte PDF generado y descargado (Calidad Vectorial).', 'success');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// --- INICIALIZACIÓN ---</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>window.onload = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 1. Asignar el listener de cambio al input de archivo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const fileInput = document.getElementById('csv-file-input');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (fileInput) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>fileInput.addEventListener('change', handleFileSelect);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 2. Intentar cargar el inventario guardado (llama a render/draw si tiene éxito)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cargarInventario();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 3. Configurar evento de resize<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>window.addEventListener('resize', () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>dibujarCanvasReporte();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>dibujarPieChartVentas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
