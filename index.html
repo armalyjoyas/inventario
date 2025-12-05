@@ -277,8 +277,13 @@
 
                     
 
-                    <input type="text" id="sku-input" placeholder="Ingresa el SKU (ej. 1, 2 o 3) para consultar y agregar." autofocus
-
+                    <input 
+                        type="number"
+                        id="sku-input"
+                        placeholder="Ingresa el SKU"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        autofocus
                         class="w-full p-4 text-xl border color-border rounded-xl focus:border-green-700 focus:ring-1 focus:ring-[#577161] transition duration-150 mb-5 text-gray-700">
 
                     
