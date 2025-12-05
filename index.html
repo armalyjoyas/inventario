@@ -1,1124 +1,2112 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario SKU (Vanguardista)</title>
-    <!-- Carga de Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Librerías para exportar a PDF -->
-    <!-- Se mantiene html2canvas por si se necesita para gráficos futuros, pero se ignora para la tabla -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- NUEVA LIBRERÍA: jsPDF-AutoTable para generación de tablas vectoriales de alta calidad -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <!-- Carga de Lucide Icons (para el icono de exportación) -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <style>
-        /* Definición de la paleta de colores Vanguardista */
-        .color-primary-green { background-color: #577161; } /* Verde Olivo Oscuro (Accento principal) */
-        .color-primary-hover { background-color: #3E4D45; } /* Verde más oscuro (Hover) */
-        .color-text-dark { color: #3C3231; } /* Marrón Espresso (Texto principal) */
-        .color-card-bg { background-color: #FFFFFF; } /* Fondo de Tarjeta */
-        .color-base-bg { background-color: #F7F7F7; } /* Fondo de la aplicación */
-        .color-border { border-color: #E5E5E5; } /* Borde suave */
-        
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Ocultar barra de desplazamiento en la tabla para estética */
-        .scrollable-table::-webkit-scrollbar { display: none; }
-        .scrollable-table { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Estilo del Canvas */
-        #ventasPieCanvas { 
-            /* Se hace más ancho para acomodar el gráfico y la leyenda */
-            max-width: 100%; 
-            height: auto; 
-        }
-        #stockCanvas { border: 1px solid #E5E5E5; border-radius: 12px; }
-        
-        /* Clases de Mensajes basadas en la paleta */
-        .success { background-color: #A5C9B3; color: #3E4D45; border: 1px solid #88A796; } /* Verde claro */
-        .error { background-color: #ffe0e0; color: #9a1f26; border: 1px solid #ffb3b3; } /* Rojo estándar, contrastante */
-        
-        /* Estilo para el input de archivo - Moderno */
-        #csv-file-input::-webkit-file-upload-button {
-            visibility: hidden;
-        }
-        #csv-file-input::before {
-            content: 'Seleccionar Archivo CSV';
-            display: inline-block;
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px 20px;
-            outline: none;
-            white-space: nowrap;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            color: #3C3231;
-        }
-        #csv-file-input:hover::before {
-            border-color: #577161;
-            background: #e9e9e9;
-        }
-        
-        /* Sombra personalizada para un efecto 'impactante y sutil' (tipo Apple) */
-        .shadow-custom {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .hover\:shadow-custom:hover {
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12), 0 6px 15px rgba(0, 0, 0, 0.07);
-        }
 
-        /* Modal y Overlays */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-        }
-    </style>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inventario SKU - ArMaly Joyería</title>
+
+    <!-- Carga de Tailwind CSS -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+
+    <!-- Librerías para exportar a PDF -->
+
+    <!-- Se mantiene html2canvas por si se necesita para gráficos futuros, pero se ignora para la tabla -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- NUEVA LIBRERÍA: jsPDF-AutoTable para generación de tablas vectoriales de alta calidad -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Carga de Lucide Icons (para el icono de exportación) -->
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    
+
+    <style>
+
+        /* Definición de la paleta de colores Vanguardista */
+
+        .color-primary-green { background-color: #577161; } /* Verde Olivo Oscuro (Accento principal) */
+
+        .color-primary-hover { background-color: #3E4D45; } /* Verde más oscuro (Hover) */
+
+        .color-text-dark { color: #3C3231; } /* Marrón Espresso (Texto principal) */
+
+        .color-card-bg { background-color: #FFFFFF; } /* Fondo de Tarjeta */
+
+        .color-base-bg { background-color: #F7F7F7; } /* Fondo de la aplicación */
+
+        .color-border { border-color: #E5E5E5; } /* Borde suave */
+
+        
+
+        body { font-family: 'Inter', sans-serif; }
+
+        
+
+        /* Ocultar barra de desplazamiento en la tabla para estética */
+
+        .scrollable-table::-webkit-scrollbar { display: none; }
+
+        .scrollable-table { -ms-overflow-style: none; scrollbar-width: none; }
+
+        
+
+        /* Estilo del Canvas */
+
+        #ventasPieCanvas { 
+
+            /* Se hace más ancho para acomodar el gráfico y la leyenda */
+
+            max-width: 100%; 
+
+            height: auto; 
+
+        }
+
+        #stockCanvas { border: 1px solid #E5E5E5; border-radius: 12px; }
+
+        
+
+        /* Clases de Mensajes basadas en la paleta */
+
+        .success { background-color: #A5C9B3; color: #3E4D45; border: 1px solid #88A796; } /* Verde claro */
+
+        .error { background-color: #ffe0e0; color: #9a1f26; border: 1px solid #ffb3b3; } /* Rojo estándar, contrastante */
+
+        
+
+        /* Estilo para el input de archivo - Moderno */
+
+        #csv-file-input::-webkit-file-upload-button {
+
+            visibility: hidden;
+
+        }
+
+        #csv-file-input::before {
+
+            content: 'Seleccionar Archivo CSV';
+
+            display: inline-block;
+
+            background: #f0f0f0;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 10px 20px;
+
+            outline: none;
+
+            white-space: nowrap;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            font-size: 14px;
+
+            color: #3C3231;
+
+        }
+
+        #csv-file-input:hover::before {
+
+            border-color: #577161;
+
+            background: #e9e9e9;
+
+        }
+
+        
+
+        /* Sombra personalizada para un efecto 'impactante y sutil' (tipo Apple) */
+
+        .shadow-custom {
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);
+
+        }
+
+        .hover\:shadow-custom:hover {
+
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12), 0 6px 15px rgba(0, 0, 0, 0.07);
+
+        }
+
+
+
+        /* Modal y Overlays */
+
+        .modal-overlay {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            z-index: 1000;
+
+        }
+
+        .modal-content {
+
+            background: white;
+
+            padding: 2rem;
+
+            border-radius: 1rem;
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+            width: 90%;
+
+            max-width: 400px;
+
+        }
+
+    </style>
+
 </head>
+
 <body class="color-base-bg color-text-dark">
-    <!-- Inicializar iconos de Lucide al cargar la página -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
-        });
-    </script>
-    <div class="container max-w-7xl mx-auto p-4 md:p-10">
-
-        <!-- HEADER CARD (Modern Apple Style - Impactante y Sutil) -->
-        <div class="color-card-bg p-8 shadow-custom rounded-3xl mb-12 border color-border transition-all duration-300 transform hover:shadow-custom">
-            <header class="text-center">
-                <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent"
-                    style="background-image: linear-gradient(135deg, #3E4D45, #577161);">
-                    Inventario SKUs <span class="text-green-600">🌿</span>
-                </h1>
-                <p class="text-xl text-gray-600 mt-3 font-light max-w-2xl mx-auto">
-                    Gestión de stock en tiempo ArMaly
-                </p>
-            </header>
-        </div>
-        
-        <!-- Tarjeta PASO 1: CARGA DE ARCHIVO -->
-        <div id="file-upload-card" class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border">
-            <h2 class="text-2xl font-semibold mb-5 text-gray-800">1. Carga de Inventario (.CSV)</h2>
-            <p class="text-gray-600 mb-5 text-base">La estructura requerida es: <code class="bg-gray-100 p-1 rounded-md text-sm">SKU, Nombre, Descripción Larga, Stock Inicial, Stock Vendido, Precio Venta</code>.</p>
-            <input type="file" id="csv-file-input" accept=".csv" class="w-full p-3 border color-border rounded-lg focus:border-green-700 transition duration-150" />
-            <div id="mensaje-carga" class="message-box mt-5 p-4 rounded-xl font-medium"></div>
-        </div>
-
-        <!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN (OCULTO HASTA QUE SE CARGUEN LOS DATOS) -->
-        <div id="main-app-content" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-                
-                <!-- Tarjeta Principal: VENTA RÁPIDA -->
-                <div id="venta-area" class="color-card-bg p-8 shadow-xl rounded-2xl lg:col-span-2 border color-border">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">2. Venta Rápida / Consulta</h2>
-                    
-                    <input type="text" id="sku-input" placeholder="Ingresa el SKU (ej. 1, 2 o 3) para consultar y agregar." autofocus
-                        class="w-full p-4 text-xl border color-border rounded-xl focus:border-green-700 focus:ring-1 focus:ring-[#577161] transition duration-150 mb-5 text-gray-700">
-                    
-                    <button onclick="registrarVentaDesdeInput()"
-                        class="flex items-center justify-center w-full py-4 color-primary-green text-white font-bold rounded-xl shadow-lg hover:color-primary-hover transition duration-200 active:bg-green-800 text-lg">
-                        <span class="mr-3 text-xl">🚀</span> CONFIRMAR VENTA (+1)
-                    </button>
-                    
-                    <div id="consulta-resultado" class="result-box mt-6 p-4 bg-gray-50 border color-border rounded-xl text-base text-gray-700 min-h-[4rem]">
-                        <!-- Resultado de la consulta se muestra aquí -->
-                        <p class="text-gray-500">Consulta el estado del producto ingresando un SKU.</p>
-                    </div>
-                    <div id="mensaje" class="message-box mt-5 p-4 rounded-xl font-medium"></div>
-                </div>
-
-                <!-- Tarjeta Secundaria: CANVAS (REPORTE VISUAL) -->
-                <div id="canvas-area" class="color-card-bg p-8 shadow-xl rounded-2xl border color-border">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">3. Stock Disponible (Visual)</h2>
-                    <!-- Se muestra el índice inicial de los productos mostrados -->
-                    <p id="visual-filter-info" class="text-sm text-gray-500 mb-3 text-center">Mostrando productos 1-10.</p>
-                    <canvas id="stockCanvas" width="400" height="200" class="w-full"></canvas>
-                </div>
-            </div>
-            
-            <!-- SECCIÓN DE REPORTE DE VENTAS (Optimización de Espacio Aplicada) -->
-            <div class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">4. Reporte Financiero y de Ventas</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                    
-                    <!-- Pie Chart Ventas con Leyenda a la Derecha (Optimizado) -->
-                    <div class="lg:col-span-2 flex flex-col md:flex-row bg-gray-50 rounded-xl overflow-hidden p-3 border color-border">
-                        <div class="flex-grow">
-                             <h3 class="text-xl font-medium mb-2 text-center text-gray-700 md:text-left md:ml-4 pt-1">Distribución de Ingresos por Producto</h3>
-                            <div class="flex justify-center items-center h-full relative p-2">
-                                <!-- El canvas ahora tiene espacio suficiente para el gráfico Y la leyenda al lado -->
-                                <canvas id="ventasPieCanvas" width="500" height="250" class="w-full"></canvas>
-                            </div>
-                        </div>
-                        <!-- Contenedor para Métricas Clave y Leyenda (al lado del Canvas) -->
-                        <div class="w-full md:w-64 flex-shrink-0 p-4 border-t md:border-t-0 md:border-l color-border bg-white rounded-b-xl md:rounded-l-none md:rounded-r-xl">
-                            
-                            <!-- BLOQUE DE MÉTRICAS -->
-                            <div class="mb-6 text-center">
-                                <p class="text-gray-600 font-medium text-sm mb-1">Ingreso Total</p>
-                                <span id="total-revenue-amount" class="font-bold text-3xl text-[#3E4D45] block">$0.00</span>
-                                
-                                <!-- NUEVA MÉTRICA: Ticket Promedio -->
-                                <div id="ticket-promedio-display" class="mt-2">
-                                    <p class="text-gray-500 text-xs">Ticket Promedio:</p>
-                                    <span id="ticket-promedio-amount" class="font-semibold text-lg text-gray-700 block">$0.00</span>
-                                </div>
-                            </div>
-                            <!-- FIN BLOQUE DE MÉTRICAS -->
-
-                            <div id="pie-legend-container" class="space-y-1 text-sm pt-4 border-t color-border">
-                                <!-- La leyenda se inyectará aquí en HTML -->
-                                <p class="text-gray-500 text-center">Datos de la leyenda...</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tabla de Ventas (Optimizado para ocupar el espacio restante) -->
-                    <div class="lg:col-span-1 bg-gray-50 rounded-xl overflow-hidden p-3 border color-border">
-                        <h3 class="text-xl font-medium mb-4 text-center text-gray-700">Detalle de Ventas Históricas</h3>
-                        <div class="overflow-x-auto scrollable-table max-h-96">
-                            <table id="ventas-tabla" class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-100 sticky top-0">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Producto</th>
-                                        <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Cant.</th>
-                                        <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Total ($)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <!-- Datos de ventas aquí -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tarjeta de la Tabla de Inventario -->
-            <div class="color-card-bg p-8 shadow-xl rounded-2xl border color-border">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold text-gray-800">5. Inventario Detallado en Tiempo Real</h2>
-                    
-                    <!-- BOTÓN DE EXPORTACIÓN A PDF (Minimalista y Sutil) -->
-                    <!-- Usa un icono 'save' y colores de bajo contraste -->
-                    <button 
-                        onclick="mostrarModalContrasena()"
-                        title="Exportar Reporte a PDF (Contraseña: armaly)"
-                        class="p-2 rounded-full 
-                               text-gray-400 bg-gray-50 
-                               transition-all duration-200 
-                               hover:text-gray-700 hover:bg-gray-200 
-                               focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50"
-                    >
-                        <i data-lucide="save" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                
-                <!-- El ID inventario-data-container ya no es necesario para html2canvas, pero se mantiene para la estructura. -->
-                <div id="inventario-data-container">
-                    <div class="overflow-x-auto scrollable-table max-h-[30rem]">
-                        <table id="inventario-tabla" class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-100 sticky top-0">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">SKU</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
-                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock Inicial</th>
-                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Vendido</th>
-                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock Disponible</th>
-                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Precio</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
-                                <!-- Los datos se inyectarán aquí con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Mensaje si la tabla está vacía -->
-                    <p id="empty-message" class="text-center text-gray-500 py-6 hidden">No hay productos en el inventario.</p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- MODAL DE CONTRASEÑA (Oculto por defecto) -->
-    <div id="password-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Exportar Inventario</h3>
-            <p class="text-gray-600 mb-4">Por favor, introduce la contraseña de seguridad para exportar el reporte a PDF:</p>
-            <input type="password" id="password-input" placeholder="Contraseña"
-                   class="w-full p-3 border color-border rounded-lg mb-4 focus:border-red-600 focus:ring-1 focus:ring-red-600 transition duration-150">
-            <div id="modal-error-message" class="text-red-500 text-sm mb-4 hidden"></div>
-            
-            <div class="flex justify-end space-x-3">
-                <button onclick="ocultarModalContrasena()"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
-                    Cancelar
-                </button>
-                <button onclick="verificarContrasenaExportar()"
-                        class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-150">
-                    Confirmar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- Variables Globales ---
-        const STORAGE_KEY = 'inventario_skus_apple_mvp';
-        const MAX_VISUAL_ITEMS = 10; // Nuevo: Límite de productos a mostrar en el gráfico visual
-        let visualStartIndex = 0;    // Nuevo: Índice inicial para el subconjunto de productos
-        let inventario = {};
-        const CORRECT_PASSWORD = 'armaly'; // Contraseña para la exportación
-
-        // --- FUNCIONES DE PERSISTENCIA Y CARGA ---
-
-        /**
-         * Parsea la cadena CSV y la convierte en el objeto inventario.
-         */
-        function parsearCSV(csvText) {
-            const lines = csvText.trim().split('\n');
-            const data = {};
-
-            if (lines.length <= 1) return data; // No hay datos además de la cabecera
-
-            for (let i = 1; i < lines.length; i++) {
-                // Usamos una expresión regular simple para manejar comas dentro de comillas
-                const values = lines[i].match(/(".*?"|[^,]+)/g);
-                
-                // Asegurar que values no sea null y tenga suficientes elementos
-                if (values && values.length >= 6) {
-                    const cleanValues = values.map(val => val.trim().replace(/"/g, ''));
-                    const sku = cleanValues[0].toUpperCase();
-                    
-                    data[sku] = {
-                        nombre: cleanValues[1],
-                        stock_inicial: parseInt(cleanValues[3], 10) || 0, 
-                        stock_vendido: parseInt(cleanValues[4], 10) || 0, 
-                        precio_venta: parseFloat(cleanValues[5]) || 0.00
-                    };
-                }
-            }
-            return data;
-        }
-
-        /**
-         * Carga el inventario de localStorage.
-         * Decide si mostrar la aplicación o el formulario de carga.
-         */
-        function cargarInventario() {
-            const storedData = localStorage.getItem(STORAGE_KEY);
-            
-            if (storedData) {
-                try {
-                    inventario = JSON.parse(storedData);
-                    // Si se carga algo, mostrar la app
-                    if (Object.keys(inventario).length > 0) {
-                        // Reiniciar el índice visual al cargar
-                        visualStartIndex = 0; 
-                        
-                        mostrarMensaje('Inventario cargado desde la última sesión.', 'success');
-                        toggleAppView(true); 
-                        renderizarTabla();
-                        renderizarTablaVentas();
-                        // Llamada con setTimeout para que Canvas tenga dimensiones correctas
-                        setTimeout(() => {
-                           dibujarCanvasReporte();
-                           dibujarPieChartVentas();
-                           // Re-renderizar iconos de Lucide (si no se hizo automáticamente)
-                           if (window.lucide) {
-                                window.lucide.createIcons();
-                            }
-                        }, 50); 
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Error al parsear localStorage:", e);
-                    // Ignorar error de JSON y forzar la carga por archivo
-                }
-            }
-            // Si no hay datos válidos, mostrar el formulario de carga
-            mostrarMensajeCarga('Por favor, carga un archivo CSV para iniciar el inventario.', 'error');
-            toggleAppView(false);
-        }
-
-        /**
-         * Maneja el evento de selección de archivo CSV.
-         */
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Mostrar nombre del archivo
-            mostrarMensajeCarga(`Archivo seleccionado: ${file.name}. Procesando...`, 'success');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const csvContent = e.target.result;
-                
-                // 1. Parsear el nuevo contenido CSV
-                const newInventory = parsearCSV(csvContent);
-                
-                if (Object.keys(newInventory).length === 0) {
-                    mostrarMensajeCarga('El archivo CSV está vacío o el formato es incorrecto.', 'error');
-                    return;
-                }
-
-                // 2. Sobrescribir el inventario, guardar y actualizar UI
-                inventario = newInventory;
-                visualStartIndex = 0; // Resetear filtro visual al cargar nuevo inventario
-                guardarInventario();
-
-                mostrarMensaje(`¡Inventario cargado exitosamente! ${Object.keys(inventario).length} productos inicializados.`, 'success');
-                
-                toggleAppView(true); // Mostrar aplicación principal primero
-                
-                renderizarTabla();
-                renderizarTablaVentas();
-                // Llamada con setTimeout para que Canvas tenga dimensiones correctas
-                setTimeout(() => {
-                    dibujarCanvasReporte();
-                    dibujarPieChartVentas();
-                    // Re-renderizar iconos de Lucide
-                    if (window.lucide) {
-                        window.lucide.createIcons();
-                    }
-                }, 50); 
-            };
-            reader.onerror = function() {
-                mostrarMensajeCarga('Error al leer el archivo.', 'error');
-            };
-            reader.readAsText(file);
-        }
-        
-        /**
-         * Alterna la visibilidad entre la carga del archivo y la aplicación principal.
-         */
-        function toggleAppView(isLoaded) {
-            const mainContent = document.getElementById('main-app-content');
-            const fileSection = document.getElementById('file-upload-card');
-
-            if (isLoaded && Object.keys(inventario).length > 0) {
-                fileSection.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-            } else {
-                fileSection.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-            }
-        }
-
-        /**
-         * Guarda el objeto inventario en localStorage.
-         */
-        function guardarInventario() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(inventario));
-        }
-
-        // --- LÓGICA DE NEGOCIO ---
-
-        /**
-         * Calcula el stock disponible para un SKU dado.
-         */
-        function calcularStockDisponible(sku) {
-            const p = inventario[sku];
-            return p ? p.stock_inicial - p.stock_vendido : 0;
-        }
-
-        /**
-         * Busca y muestra la información del producto en el área de consulta.
-         */
-        function consultarProducto(sku) {
-            const p = inventario[sku];
-            const resultadoDiv = document.getElementById('consulta-resultado');
-            
-            if (!sku) {
-                 resultadoDiv.innerHTML = '<p class="text-gray-500">Consulta el estado del producto ingresando un SKU.</p>';
-                 return null;
-            }
-
-            if (!p) {
-                resultadoDiv.innerHTML = `<p class="text-red-600 font-semibold">❌ SKU <b>${sku}</b> no encontrado en el inventario.</p>`;
-                return null;
-            }
-
-            const stockDisponible = calcularStockDisponible(sku);
-            const stockColor = stockDisponible <= 5 ? 'text-red-600' : 'text-[#577161]';
-
-            resultadoDiv.innerHTML = `
-                <p><b>Producto:</b> <span class="text-gray-900">${p.nombre}</span></p>
-                <p><b>Precio:</b> <span class="text-gray-900">$${p.precio_venta.toFixed(2)}</span></p>
-                <p><b>Stock Disponible:</b> <span class="${stockColor} font-bold text-lg">${stockDisponible} Unidades</span></p>
-            `;
-            return p;
-        }
-
-        /**
-         * Registra una venta, actualiza el stock, guarda y renderiza la vista.
-         */
-        function registrarVenta(sku) {
-            const p = inventario[sku];
-            
-            if (!p) {
-                mostrarMensaje(`ERROR: SKU ${sku} no existe.`, 'error');
-                return;
-            }
-
-            const stockActual = calcularStockDisponible(sku);
-
-            if (stockActual <= 0) {
-                mostrarMensaje(`⛔ VENTA BLOQUEADA: ${p.nombre} agotado. Stock: 0.`, 'error');
-                return;
-            }
-
-            // Actualizar stock
-            p.stock_vendido += 1;
-            guardarInventario();
-            
-            // Lógica de reemplazo dinámico para el gráfico visual (Punto clave)
-            actualizarIndiceVisual(sku);
-
-            const nuevoStock = calcularStockDisponible(sku);
-            mostrarMensaje(`🎉 Venta de ${p.nombre} registrada. Stock restante: ${nuevoStock}.`, 'success');
-            
-            // Actualizar vistas de consulta, tablas y gráficos
-            consultarProducto(sku);
-            renderizarTabla();
-            renderizarTablaVentas();
-            dibujarCanvasReporte(); 
-            dibujarPieChartVentas();
-        }
-        
-        /**
-         * NUEVA FUNCIÓN: Actualiza el índice visual si el producto vendido
-         * está en el rango visible y su stock llegó a cero.
-         */
-        function actualizarIndiceVisual(skuVendido) {
-            const skus = Object.keys(inventario);
-            const indexVendido = skus.indexOf(skuVendido);
-
-            // 1. Determinar si el producto vendido está en el rango visible
-            if (indexVendido >= visualStartIndex && indexVendido < visualStartIndex + MAX_VISUAL_ITEMS) {
-                // 2. Verificar si su stock disponible acaba de llegar a CERO
-                if (calcularStockDisponible(skuVendido) === 0) {
-                    
-                    // 3. Buscar el siguiente producto NO VISIBLE con stock > 0
-                    let nextIndex = visualStartIndex + MAX_VISUAL_ITEMS;
-                    let foundReplacement = false;
-                    
-                    // Buscar en el resto del inventario
-                    while (nextIndex < skus.length) {
-                        if (calcularStockDisponible(skus[nextIndex]) > 0) {
-                            foundReplacement = true;
-                            break; 
-                        }
-                        nextIndex++;
-                    }
-
-                    // 4. Si encontramos un reemplazo y el producto vendido es el primero visible,
-                    // O si el producto vendido es el último visible (o el que se agotó),
-                    // movemos el índice de inicio para hacer espacio al nuevo producto.
-                    // La forma más simple de garantizar que el nuevo producto entre es:
-                    if (foundReplacement && visualStartIndex < skus.length - MAX_VISUAL_ITEMS) {
-                        visualStartIndex++;
-                        mostrarMensaje(`Filtro visual avanzado: Se agotó un producto. Mostrando nuevo rango.`, 'success');
-                    }
-                    
-                    // Si no se encuentra reemplazo, y el índice está en 0, no hacer nada. 
-                    // Si el índice ya se movió, mantendrá el último subconjunto.
-                }
-            }
-        }
-
-
-        /**
-         * Maneja la entrada del SKU y lanza la venta al presionar el botón o Enter.
-         */
-        function registrarVentaDesdeInput() {
-            const input = document.getElementById('sku-input');
-            const sku = input.value.trim().toUpperCase();
-            
-            if (!sku) {
-                mostrarMensaje('Por favor, ingresa un SKU válido.', 'error');
-                return;
-            }
-
-            registrarVenta(sku);
-            input.value = ''; // Limpiar campo después de la venta
-        }
-
-        // Escuchar la tecla Enter en el campo de texto para la venta rápida
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('sku-input');
-            if (input) {
-                // Listener para confirmar venta al presionar Enter
-                input.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault(); // Evitar el envío del formulario
-                        registrarVentaDesdeInput();
-                    }
-                });
-                
-                // NUEVO: Implementación de la búsqueda automática/consulta en tiempo real (evento 'input')
-                input.addEventListener('input', (event) => {
-                    const sku = event.target.value.trim().toUpperCase();
-                    consultarProducto(sku);
-                });
-            }
-        });
-
-
-        // --- FUNCIONES DE RENDERIZADO Y CANVAS ---
-        
-        /**
-         * Genera colores de la paleta para el Pie Chart.
-         */
-        function getRandomColor(index) {
-            // Paleta de colores más moderna y coherente con el esquema verde/gris/marrón
-            const colors = [
-                '#577161', // Verde Olivo Oscuro
-                '#A5C9B3', // Verde Claro
-                '#86736F', // Taupe/Marrón Grisáceo
-                '#8B959A', // Gris Medio
-                '#3C3231', // Marrón Espresso
-                '#6D797C', // Gris Oscuro
-                '#88A796', // Verde Medio
-            ];
-            return colors[index % colors.length];
-        }
-
-        /**
-         * Dibuja un gráfico circular (Pie Chart) que refleja la distribución de ingresos por producto
-         * y genera la leyenda en un contenedor HTML separado.
-         */
-        function dibujarPieChartVentas() {
-            const canvas = document.getElementById('ventasPieCanvas');
-            const totalRevenueEl = document.getElementById('total-revenue-amount'); // Modificado para el nuevo ID
-            const ticketPromedioEl = document.getElementById('ticket-promedio-amount'); // Nuevo elemento
-            const legendContainer = document.getElementById('pie-legend-container');
-            
-            if (!canvas || !totalRevenueEl || !ticketPromedioEl || !legendContainer) return;
-
-            const ctx = canvas.getContext('2d');
-            
-            // Usar getBoundingClientRect del contenedor padre del canvas para calcular el tamaño real
-            const containerRect = canvas.parentElement.getBoundingClientRect();
-            // Estimamos el ancho para el gráfico (excluyendo el área de la leyenda)
-            const canvasWidth = containerRect.width;
-            const canvasHeight = canvas.height; 
-            
-            // Asegurar dimensiones correctas en el atributo del canvas
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            legendContainer.innerHTML = ''; // Limpiar leyenda HTML
-
-            const salesData = Object.keys(inventario)
-                .map(sku => ({
-                    nombre: inventario[sku].nombre,
-                    revenue: inventario[sku].stock_vendido * inventario[sku].precio_venta,
-                    items_sold: inventario[sku].stock_vendido
-                }))
-                .filter(item => item.revenue > 0);
-
-            const totalRevenue = salesData.reduce((sum, item) => sum + item.revenue, 0);
-            
-            // --------------------------------------------------------
-            // 1. CÁLCULO DE MÉTRICAS CLAVE
-            // --------------------------------------------------------
-            const totalItemsSold = salesData.reduce((sum, item) => sum + item.items_sold, 0);
-
-            let ticketPromedio = 0;
-            if (totalItemsSold > 0) {
-                // Fórmula: Ingreso Total / Número de Transacciones (Unidades Vendidas)
-                ticketPromedio = totalRevenue / totalItemsSold; 
-            }
-
-            // --------------------------------------------------------
-            // 2. ACTUALIZACIÓN DEL DOM DE MÉTRICAS
-            // --------------------------------------------------------
-            totalRevenueEl.textContent = `$${totalRevenue.toFixed(2)}`;
-            ticketPromedioEl.textContent = `$${ticketPromedio.toFixed(2)}`;
-            
-            // Manejo de caso sin ventas para el Canvas
-            if (salesData.length === 0 || totalRevenue <= 0) {
-                // Reiniciar visualizaciones a cero
-                totalRevenueEl.textContent = '$0.00';
-                ticketPromedioEl.textContent = '$0.00';
-                
-                legendContainer.innerHTML = '<p class="text-gray-500 text-center">Sin ventas registradas.</p>';
-                
-                // Dibujar un mensaje de placeholder en el canvas
-                ctx.fillStyle = '#F0F0F0';
-                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                ctx.fillStyle = '#9ca3af';
-                ctx.textAlign = 'center';
-                ctx.font = '16px Inter';
-                ctx.fillText('Sin datos de ventas', canvasWidth / 2, canvasHeight / 2);
-                return;
-            }
-
-            // --------------------------------------------------------
-            // 3. DIBUJO DEL GRÁFICO CIRCULAR
-            // --------------------------------------------------------
-
-            // Calcular el espacio real que debe ocupar el gráfico circular
-            const graphContainerWidth = canvasWidth; 
-            const centerX = graphContainerWidth * 0.45; // Centrar un poco a la izquierda 
-            const centerY = canvasHeight / 2;
-            const radius = Math.max(0, Math.min(centerX, centerY) - 10); 
-            
-            if (radius === 0) return; 
-
-            let currentAngle = 0;
-            
-            // --- DIBUJAR GRÁFICO ---
-            salesData.forEach((item, index) => {
-                const sliceAngle = (item.revenue / totalRevenue) * 2 * Math.PI;
-                if (!isFinite(sliceAngle)) return; 
-                
-                const startAngle = currentAngle;
-                const endAngle = currentAngle + sliceAngle;
-                const color = getRandomColor(index);
-                const percentage = (item.revenue / totalRevenue) * 100;
-                
-                // Draw Pie Slice
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, startAngle, endAngle); 
-                ctx.closePath();
-                ctx.fillStyle = color;
-                ctx.fill();
-
-                // Draw Slice Border
-                ctx.strokeStyle = '#F7F7F7';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                // Draw Percentage Label (only for slices > 5%)
-                const midAngle = startAngle + sliceAngle / 2;
-                const labelRadius = radius * 0.8;
-                const labelX = centerX + labelRadius * Math.cos(midAngle);
-                const labelY = centerY + labelRadius * Math.sin(midAngle);
-                
-                if (percentage > 5) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = 'bold 12px Inter';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${percentage.toFixed(0)}%`, labelX, labelY);
-                }
-
-                // --- CREAR LEYENDA HTML (para el contenedor de la derecha) ---
-                const legendItem = document.createElement('div');
-                legendItem.className = 'flex items-center justify-between text-gray-700';
-                legendItem.innerHTML = `
-                    <div class="flex items-center">
-                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${color};"></span>
-                        <span class="truncate">${item.nombre}</span>
-                    </div>
-                    <span class="font-semibold text-[#577161]">${percentage.toFixed(1)}%</span>
-                `;
-                legendContainer.appendChild(legendItem);
-
-                currentAngle = endAngle;
-            });
-        }
-
-        /**
-         * Dibuja un gráfico de barras simple en el elemento CANVAS (Stock Disponible).
-         * **FILTRADO:** Solo dibuja MAX_VISUAL_ITEMS (10) productos desde visualStartIndex.
-         */
-        function dibujarCanvasReporte() {
-            const canvas = document.getElementById('stockCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            const canvasWidth = canvas.clientWidth;
-            const canvasHeight = canvas.clientHeight;
-
-            // Seguridad: Verificar que el canvas tiene un tamaño visible antes de dibujar
-            if (canvasWidth === 0 || canvasHeight === 0) {
-                return; 
-            }
-
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            const skus = Object.keys(inventario);
-            if (skus.length === 0) return;
-
-            // --- APLICAR FILTRO DE 10 PRODUCTOS ---
-            const displayedSkus = skus.slice(visualStartIndex, visualStartIndex + MAX_VISUAL_ITEMS);
-
-            // 1. Actualizar el mensaje del filtro
-            const startDisplay = visualStartIndex + 1;
-            let endDisplay = visualStartIndex + displayedSkus.length;
-            if (endDisplay > skus.length) endDisplay = skus.length; // Ajustar si es el final
-            
-            const infoText = `Mostrando productos ${startDisplay}-${endDisplay} de ${skus.length}.`;
-            const filterInfoEl = document.getElementById('visual-filter-info');
-            if(filterInfoEl) filterInfoEl.textContent = infoText;
-
-            // 2. Preparar los datos filtrados
-            const data = displayedSkus.map(sku => ({
-                sku: sku,
-                stock: calcularStockDisponible(sku)
-            }));
-            
-            const margin = 15;
-            const labelMargin = 25; 
-            const plotHeight = canvasHeight - margin * 2 - labelMargin;
-            const plotWidth = canvasWidth - margin * 2;
-            const maxStock = Math.max(...data.map(d => d.stock), 1); 
-
-            ctx.font = '11px Inter';
-            ctx.textAlign = 'center';
-            
-            const totalItems = data.length;
-            // Asegurar que solo se dibujan 10 barras
-            const barWidth = (plotWidth / MAX_VISUAL_ITEMS) * 0.6; 
-            const spacing = (plotWidth / MAX_VISUAL_ITEMS) * 0.4; 
-
-            data.forEach((item, index) => {
-                // Posición X basada en el índice dentro del subconjunto (0 a 9)
-                const x = margin + index * (barWidth + spacing) + spacing / 2;
-                
-                // Asegurar que la altura es al menos 1px si hay stock para visibilidad
-                const rawBarHeight = (item.stock / maxStock) * plotHeight;
-                const barHeight = item.stock > 0 ? Math.max(1, rawBarHeight) : 0;
-                
-                // Dibujar barra
-                const color = item.stock <= 5 && item.stock > 0 ? '#EF4444' : (item.stock === 0 ? '#B0B0B0' : '#577161'); /* Rojo, Gris Agotado, o Verde primario */
-                ctx.fillStyle = color;
-                ctx.fillRect(x, canvasHeight - margin - labelMargin - barHeight, barWidth, barHeight);
-                
-                // Dibujar valor (stock)
-                ctx.fillStyle = '#3C3231';
-                ctx.font = 'bold 12px Inter';
-                // Solo dibujar el valor si el stock es mayor a 0, o si es 0, dibujarlo abajo
-                if (item.stock > 0) {
-                    ctx.fillText(item.stock, x + barWidth / 2, canvasHeight - margin - labelMargin - barHeight - 5);
-                } else {
-                    ctx.fillStyle = '#B0B0B0';
-                    ctx.fillText('0', x + barWidth / 2, canvasHeight - margin - labelMargin - 50);
-                }
-                
-                // Dibujar etiqueta (SKU)
-                ctx.fillStyle = '#6D797C';
-                ctx.font = '11px Inter';
-                ctx.fillText(item.sku, x + barWidth / 2, canvasHeight - margin - 5);
-            });
-
-            // Dibujar eje X (línea base)
-            ctx.beginPath();
-            ctx.moveTo(margin, canvasHeight - margin - labelMargin);
-            ctx.lineTo(canvasWidth - margin, canvasHeight - margin - labelMargin);
-            ctx.strokeStyle = '#D1D5DB';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-        }
-
-        /**
-         * Renderiza la tabla de productos vendidos (ahora más compacta).
-         */
-        function renderizarTablaVentas() {
-            const tbody = document.querySelector('#ventas-tabla tbody');
-            if (!tbody) return;
-            tbody.innerHTML = ''; 
-            
-            const skus = Object.keys(inventario);
-
-            skus.forEach(sku => {
-                const p = inventario[sku];
-                const vendidos = p.stock_vendido;
-                
-                if (vendidos > 0) {
-                    const revenue = vendidos * p.precio_venta;
-
-                    const row = tbody.insertRow();
-                    row.classList.add('hover:bg-gray-100');
-
-                    // Celdas (solo Producto, Cant. y Total)
-                    row.insertCell().textContent = p.nombre;
-                    
-                    const vendidosCell = row.insertCell();
-                    vendidosCell.textContent = vendidos;
-                    vendidosCell.classList.add('text-right');
-
-                    // Columna Total
-                    const totalCell = row.insertCell();
-                    totalCell.innerHTML = `<span class="font-bold text-[#577161]">$${revenue.toFixed(2)}</span>`;
-                    totalCell.classList.add('text-right');
-                    
-                    // Aplicar estilos de Tailwind a las celdas
-                    Array.from(row.cells).forEach(cell => cell.classList.add('px-3', 'py-2', 'whitespace-nowrap', 'text-sm'));
-                }
-            });
-        }
-
-        /**
-         * Renderiza la tabla de inventario en el HTML.
-         */
-        function renderizarTabla() {
-            const tbody = document.querySelector('#inventario-tabla tbody');
-            if (!tbody) return;
-            tbody.innerHTML = ''; 
-            const skus = Object.keys(inventario);
-            const emptyMessage = document.getElementById('empty-message');
-
-            if (skus.length === 0) {
-                emptyMessage.classList.remove('hidden');
-                return;
-            }
-            emptyMessage.classList.add('hidden');
-
-            skus.forEach(sku => {
-                const p = inventario[sku];
-                const stockDisponible = calcularStockDisponible(sku);
-                
-                const row = tbody.insertRow();
-                
-                // Estilo de fila según el stock
-                if (stockDisponible <= 5 && stockDisponible > 0) {
-                    row.classList.add('bg-yellow-50', 'hover:bg-yellow-100'); 
-                } else if (stockDisponible === 0) {
-                     row.classList.add('bg-red-50', 'hover:bg-red-100'); 
-                } else {
-                    row.classList.add('hover:bg-gray-50');
-                }
-
-                // Celdas
-                row.insertCell().textContent = sku;
-                row.insertCell().textContent = p.nombre;
-                
-                const inicialCell = row.insertCell();
-                inicialCell.textContent = p.stock_inicial;
-                inicialCell.classList.add('text-right');
-                
-                const vendidoCell = row.insertCell();
-                vendidoCell.textContent = p.stock_vendido;
-                vendidoCell.classList.add('text-right');
-                
-                // Columna de Stock Disponible (resaltada)
-                const dispCell = row.insertCell();
-                const stockColor = stockDisponible <= 5 ? 'text-red-600' : 'text-[#577161]';
-                dispCell.innerHTML = `<span class="font-bold ${stockColor} text-base">${stockDisponible}</span>`;
-                dispCell.classList.add('text-right');
-                
-                const precioCell = row.insertCell();
-                precioCell.textContent = `$${p.precio_venta.toFixed(2)}`;
-                precioCell.classList.add('text-right');
-                
-                // Aplicar estilos de Tailwind a las celdas
-                Array.from(row.cells).forEach(cell => cell.classList.add('px-6', 'py-3', 'whitespace-nowrap', 'text-sm'));
-            });
-        }
-
-        /**
-         * Muestra un mensaje temporal en el área de Venta/Consulta.
-         */
-        function mostrarMensaje(texto, tipo) {
-            const div = document.getElementById('mensaje');
-            if (!div) return;
-            div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;
-            div.textContent = texto;
-            
-            setTimeout(() => {
-                div.textContent = '';
-                div.className = 'message-box mt-5 p-4 rounded-xl font-medium';
-            }, 3500);
-        }
-        
-        /**
-         * Muestra un mensaje temporal en el área de Carga de Archivo.
-         */
-        function mostrarMensajeCarga(texto, tipo) {
-            const div = document.getElementById('mensaje-carga');
-            if (!div) return;
-            div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;
-            div.textContent = texto;
-            
-            setTimeout(() => {
-                div.textContent = '';
-                div.className = 'message-box mt-5 p-4 rounded-xl font-medium';
-            }, 5000);
-        }
-        
-        // --- FUNCIONES DE MODAL DE CONTRASEÑA Y EXPORTACIÓN ---
-
-        /**
-         * Muestra el modal para solicitar la contraseña antes de exportar.
-         */
-        function mostrarModalContrasena() {
-            const modal = document.getElementById('password-modal');
-            const passwordInput = document.getElementById('password-input');
-            const errorMessage = document.getElementById('modal-error-message');
-            
-            if (Object.keys(inventario).length === 0) {
-                mostrarMensaje('No hay datos en el inventario para exportar.', 'error');
-                return;
-            }
-            
-            errorMessage.classList.add('hidden');
-            passwordInput.value = '';
-            modal.classList.remove('hidden');
-        }
-
-        /**
-         * Oculta el modal de contraseña.
-         */
-        function ocultarModalContrasena() {
-            const modal = document.getElementById('password-modal');
-            modal.classList.add('hidden');
-        }
-
-        /**
-         * Verifica la contraseña e inicia la exportación.
-         */
-        function verificarContrasenaExportar() {
-            const passwordInput = document.getElementById('password-input');
-            const enteredPassword = passwordInput.value.trim();
-            const errorMessage = document.getElementById('modal-error-message');
-            
-            if (enteredPassword === CORRECT_PASSWORD) {
-                ocultarModalContrasena();
-                exportarInventarioPDF();
-            } else {
-                errorMessage.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';
-                errorMessage.classList.remove('hidden');
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        }
-        
-        /**
-         * Genera un reporte PDF de la tabla de inventario *directamente*
-         * utilizando jsPDF y el plugin AutoTable para calidad vectorial.
-         */
-        function exportarInventarioPDF() {
-            // Usamos la librería window.jspdf ya cargada
-            const { jsPDF } = window.jspdf;
-            
-            mostrarMensaje('Generando reporte PDF vectorial... Por favor espera.', 'success');
-
-            // 1. Inicializar jsPDF
-            const doc = new jsPDF('p', 'mm', 'a4'); // 'p' = portrait, 'mm' = milimetros
-
-            // 2. Título y Metadatos (Vectoriales)
-            doc.setFontSize(18);
-            doc.text("Reporte de Inventario SKU en Tiempo Real", 105, 15, null, null, "center");
-            
-            doc.setFontSize(10);
-            doc.text(`Fecha de Exportación: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 10, 25);
-            
-            // 3. Preparar Datos para AutoTable
-            const headers = [
-                ['SKU', 'Nombre', 'Stock Inicial', 'Vendido', 'Stock Disponible', 'Precio Venta']
-            ];
-            
-            const tableData = Object.keys(inventario).map(sku => {
-                const p = inventario[sku];
-                const stockDisponible = calcularStockDisponible(sku);
-                
-                // Formatear el precio con el símbolo $
-                const precioFormateado = `$${p.precio_venta.toFixed(2)}`;
-                
-                return [
-                    sku, 
-                    p.nombre, 
-                    p.stock_inicial, 
-                    p.stock_vendido, 
-                    stockDisponible,
-                    precioFormateado
-                ];
-            });
-
-            // 4. Generar la tabla usando AutoTable
-            // Nota: El plugin autotable (ya cargado) se adjunta a la instancia de jspdf.
-            doc.autoTable({
-                startY: 35, // Comenzar debajo del encabezado
-                head: headers,
-                body: tableData,
-                theme: 'striped', // Un tema limpio y profesional
-                styles: { 
-                    fontSize: 9,
-                    cellPadding: 3,
-                    halign: 'center' // Centrar el contenido de las celdas por defecto
-                },
-                headStyles: {
-                    fillColor: [87, 113, 97], // #577161 - Nuestro color primario verde
-                    textColor: [255, 255, 255],
-                    fontStyle: 'bold'
-                },
-                columnStyles: {
-                    // Sobrescribir la alineación para las columnas de texto y números
-                    0: { halign: 'left', cellWidth: 20 }, // SKU
-                    1: { halign: 'left', cellWidth: 45 }, // Nombre
-                    2: { halign: 'right' }, // Stock Inicial
-                    3: { halign: 'right' }, // Vendido
-                    4: { halign: 'right', fontStyle: 'bold' }, // Disponible (resaltado)
-                    5: { halign: 'right' } // Precio Venta
-                },
-                didDrawPage: function (data) {
-                    // Pie de página (ej. número de página)
-                    doc.setFontSize(8);
-                    const pageCount = doc.internal.getNumberOfPages();
-                    doc.text("Página " + doc.internal.getCurrentPageInfo().pageNumber + " de " + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 5);
-                }
-            });
-
-            // 5. Descargar el PDF
-            doc.save(`Reporte_Inventario_Vectorial_${new Date().toISOString().slice(0, 10)}.pdf`);
-            mostrarMensaje('✅ Reporte PDF generado y descargado (Calidad Vectorial).', 'success');
-        }
-
-
-        // --- INICIALIZACIÓN ---
-        window.onload = () => {
-            // 1. Asignar el listener de cambio al input de archivo
-            const fileInput = document.getElementById('csv-file-input');
-            if (fileInput) {
-                fileInput.addEventListener('change', handleFileSelect);
-            }
-            
-            // 2. Intentar cargar el inventario guardado (llama a render/draw si tiene éxito)
-            cargarInventario();
-            
-            // 3. Configurar evento de resize 
-            window.addEventListener('resize', () => {
-                dibujarCanvasReporte();
-                dibujarPieChartVentas();
-            });
-        };
-    </script>
+
+    <!-- Inicializar iconos de Lucide al cargar la página -->
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            if (window.lucide) {
+
+                window.lucide.createIcons();
+
+            }
+
+        });
+
+    </script>
+
+    <div class="container max-w-7xl mx-auto p-4 md:p-10">
+
+
+
+        <!-- HEADER CARD (Modern Apple Style - Impactante y Sutil) -->
+
+        <div class="color-card-bg p-8 shadow-custom rounded-3xl mb-12 border color-border transition-all duration-300 transform hover:shadow-custom">
+
+            <header class="text-center">
+
+                <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent"
+
+                    style="background-image: linear-gradient(135deg, #3E4D45, #577161);">
+
+                    Inventario SKUs <span class="text-green-600">🌿</span>
+
+                </h1>
+
+                <p class="text-xl text-gray-600 mt-3 font-light max-w-2xl mx-auto">
+
+                    Gestión de stock Joyería ArMaly
+
+                </p>
+
+            </header>
+
+        </div>
+
+        
+
+        <!-- Tarjeta PASO 1: CARGA DE ARCHIVO -->
+
+        <div id="file-upload-card" class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border">
+
+            <h2 class="text-2xl font-semibold mb-5 text-gray-800">1. Carga de Inventario (.CSV)</h2>
+
+            <p class="text-gray-600 mb-5 text-base">La estructura requerida es: <code class="bg-gray-100 p-1 rounded-md text-sm">SKU, Nombre, Descripción Larga, Stock Inicial, Stock Vendido, Precio Venta</code>.</p>
+
+            <input type="file" id="csv-file-input" accept=".csv" class="w-full p-3 border color-border rounded-lg focus:border-green-700 transition duration-150" />
+
+            <div id="mensaje-carga" class="message-box mt-5 p-4 rounded-xl font-medium"></div>
+
+        </div>
+        
+
+
+
+        <!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN (OCULTO HASTA QUE SE CARGUEN LOS DATOS) -->
+
+        <div id="main-app-content" class="hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+
+                
+
+                <!-- Tarjeta Principal: VENTA RÁPIDA -->
+
+                <div id="venta-area" class="color-card-bg p-8 shadow-xl rounded-2xl lg:col-span-2 border color-border">
+
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">2. Venta Rápida / Consulta</h2>
+
+                    
+
+                    <input type="text" id="sku-input" placeholder="Ingresa el SKU (ej. 1, 2 o 3) para consultar y agregar." autofocus
+
+                        class="w-full p-4 text-xl border color-border rounded-xl focus:border-green-700 focus:ring-1 focus:ring-[#577161] transition duration-150 mb-5 text-gray-700">
+
+                    
+
+                    <button onclick="registrarVentaDesdeInput()"
+
+                        class="flex items-center justify-center w-full py-4 color-primary-green text-white font-bold rounded-xl shadow-lg hover:color-primary-hover transition duration-200 active:bg-green-800 text-lg">
+
+                        <span class="mr-3 text-xl">🚀</span> CONFIRMAR VENTA (+1)
+
+                    </button>
+
+                    
+
+                    <div id="consulta-resultado" class="result-box mt-6 p-4 bg-gray-50 border color-border rounded-xl text-base text-gray-700 min-h-[4rem]">
+
+                        <!-- Resultado de la consulta se muestra aquí -->
+
+                        <p class="text-gray-500">Consulta el estado del producto ingresando un SKU.</p>
+
+                    </div>
+
+                    <div id="mensaje" class="message-box mt-5 p-4 rounded-xl font-medium"></div>
+
+                </div>
+
+
+
+                <!-- Tarjeta Secundaria: CANVAS (REPORTE VISUAL) -->
+
+                <div id="canvas-area" class="color-card-bg p-8 shadow-xl rounded-2xl border color-border">
+
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">3. Stock Disponible (Visual)</h2>
+
+                    <canvas id="stockCanvas" width="400" height="200" class="w-full"></canvas>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- SECCIÓN DE REPORTE DE VENTAS (Optimización de Espacio Aplicada) -->
+
+            <div class="color-card-bg p-8 shadow-xl rounded-2xl mb-10 border color-border">
+
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">4. Reporte Financiero y de Ventas</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+                    
+
+                    <!-- Pie Chart Ventas con Leyenda a la Derecha (Optimizado) -->
+
+                    <div class="lg:col-span-2 flex flex-col md:flex-row bg-gray-50 rounded-xl overflow-hidden p-3 border color-border">
+
+                        <div class="flex-grow">
+
+                             <h3 class="text-xl font-medium mb-2 text-center text-gray-700 md:text-left md:ml-4 pt-1">Distribución de Ingresos por Producto</h3>
+
+                            <div class="flex justify-center items-center h-full relative p-2">
+
+                                <!-- El canvas ahora tiene espacio suficiente para el gráfico Y la leyenda al lado -->
+
+                                <canvas id="ventasPieCanvas" width="500" height="250" class="w-full"></canvas>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Contenedor para Métricas Clave y Leyenda (al lado del Canvas) -->
+
+                        <div class="w-full md:w-64 flex-shrink-0 p-4 border-t md:border-t-0 md:border-l color-border bg-white rounded-b-xl md:rounded-l-none md:rounded-r-xl">
+
+                            
+
+                            <!-- BLOQUE DE MÉTRICAS -->
+
+                            <div class="mb-6 text-center">
+
+                                <p class="text-gray-600 font-medium text-sm mb-1">Ingreso Total</p>
+
+                                <span id="total-revenue-amount" class="font-bold text-3xl text-[#3E4D45] block">$0.00</span>
+
+                                
+
+                                <!-- NUEVA MÉTRICA: Ticket Promedio -->
+
+                                <div id="ticket-promedio-display" class="mt-2">
+
+                                    <p class="text-gray-500 text-xs">Ticket Promedio:</p>
+
+                                    <span id="ticket-promedio-amount" class="font-semibold text-lg text-gray-700 block">$0.00</span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- FIN BLOQUE DE MÉTRICAS -->
+
+
+
+                            <div id="pie-legend-container" class="space-y-1 text-sm pt-4 border-t color-border">
+
+                                <!-- La leyenda se inyectará aquí en HTML -->
+
+                                <p class="text-gray-500 text-center">Datos de la leyenda...</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Tabla de Ventas (Optimizado para ocupar el espacio restante) -->
+
+                    <div class="lg:col-span-1 bg-gray-50 rounded-xl overflow-hidden p-3 border color-border">
+
+                        <h3 class="text-xl font-medium mb-4 text-center text-gray-700">Detalle de Ventas Históricas</h3>
+
+                        <div class="overflow-x-auto scrollable-table max-h-96">
+
+                            <table id="ventas-tabla" class="min-w-full divide-y divide-gray-200">
+
+                                <thead class="bg-gray-100 sticky top-0">
+
+                                    <tr>
+
+                                        <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Producto</th>
+
+                                        <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Cant.</th>
+
+                                        <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Total ($)</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody class="bg-white divide-y divide-gray-200">
+
+                                    <!-- Datos de ventas aquí -->
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- Tarjeta de la Tabla de Inventario -->
+
+            <div class="color-card-bg p-8 shadow-xl rounded-2xl border color-border">
+
+                <div class="flex justify-between items-center mb-6">
+
+                    <h2 class="text-2xl font-semibold text-gray-800">5. Inventario Detallado en Tiempo Real</h2>
+
+                    
+
+                    <!-- BOTÓN DE EXPORTACIÓN A PDF (Minimalista y Sutil) -->
+
+                    <!-- Usa un icono 'save' y colores de bajo contraste -->
+
+                    <button 
+
+                        onclick="mostrarModalContrasena()"
+
+                        title="Exportar Reporte a PDF (Contraseña: armaly)"
+
+                        class="p-2 rounded-full 
+
+                               text-gray-400 bg-gray-50 
+
+                               transition-all duration-200 
+
+                               hover:text-gray-700 hover:bg-gray-200 
+
+                               focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50"
+
+                    >
+
+                        <i data-lucide="save" class="w-5 h-5"></i>
+
+                    </button>
+
+                </div>
+
+                
+
+                <!-- El ID inventario-data-container ya no es necesario para html2canvas, pero se mantiene para la estructura. -->
+
+                <div id="inventario-data-container">
+
+                    <div class="overflow-x-auto scrollable-table max-h-[30rem]">
+
+                        <table id="inventario-tabla" class="min-w-full divide-y divide-gray-200">
+
+                            <thead class="bg-gray-100 sticky top-0">
+
+                                <tr>
+
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">SKU</th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
+
+                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock Inicial</th>
+
+                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Vendido</th>
+
+                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock Disponible</th>
+
+                                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Precio</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+
+                                <!-- Los datos se inyectarán aquí con JavaScript -->
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <!-- Mensaje si la tabla está vacía -->
+
+                    <p id="empty-message" class="text-center text-gray-500 py-6 hidden">No hay productos en el inventario.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <!-- MODAL DE CONTRASEÑA (Oculto por defecto) -->
+
+    <div id="password-modal" class="modal-overlay hidden">
+
+        <div class="modal-content">
+
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Exportar Inventario</h3>
+
+            <p class="text-gray-600 mb-4">Por favor, introduce la contraseña de seguridad para exportar el reporte a PDF:</p>
+
+            <input type="password" id="password-input" placeholder="Contraseña"
+
+                   class="w-full p-3 border color-border rounded-lg mb-4 focus:border-red-600 focus:ring-1 focus:ring-red-600 transition duration-150">
+
+            <div id="modal-error-message" class="text-red-500 text-sm mb-4 hidden"></div>
+
+            
+
+            <div class="flex justify-end space-x-3">
+
+                <button onclick="ocultarModalContrasena()"
+
+                        class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
+
+                    Cancelar
+
+                </button>
+
+                <button onclick="verificarContrasenaExportar()"
+
+                        class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-150">
+
+                    Confirmar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        // --- DATOS SIMULADOS DEL CSV (Plantilla de ejemplo, NO fuente de datos) ---
+
+        const CSV_TEMPLATE = `SKU,Nombre,Descripcion Larga,Stock Inicial,Stock Vendido,Precio Venta
+
+CO-012-40,Collar Trenzado,"Plata 925, 45cm",20,5,150.00
+
+AR-003-25,Aretes de Perla,"Perlas cultivadas",15,12,85.50
+
+AN-001-30,Anillo Zafiro,"Zafiro natural 1ct",10,0,320.00
+
+MA-005-50,Manilla Cuero,"Cuero genuino, 50cm",50,30,45.00
+
+PUL-001-10,Pulsera Plata,"Diseño Minimalista",40,15,95.00
+
+CAD-002-45,Cadena Oro,"Oro 18K, 45cm",5,1,800.00
+
+`;
+
+
+
+        // --- Variables Globales ---
+
+        const STORAGE_KEY = 'inventario_skus_apple_mvp';
+
+        let inventario = {};
+
+        const CORRECT_PASSWORD = 'armaly'; // Contraseña para la exportación
+
+
+
+        // --- FUNCIONES DE PERSISTENCIA Y CARGA ---
+
+
+
+        /**
+
+         * Parsea la cadena CSV y la convierte en el objeto inventario.
+
+         */
+
+        function parsearCSV(csvText) {
+
+            const lines = csvText.trim().split('\n');
+
+            const data = {};
+
+
+
+            if (lines.length <= 1) return data; // No hay datos además de la cabecera
+
+
+
+            for (let i = 1; i < lines.length; i++) {
+
+                // Usamos una expresión regular simple para manejar comas dentro de comillas
+
+                const values = lines[i].match(/(".*?"|[^,]+)/g);
+
+                
+
+                // Asegurar que values no sea null y tenga suficientes elementos
+
+                if (values && values.length >= 6) {
+
+                    const cleanValues = values.map(val => val.trim().replace(/"/g, ''));
+
+                    const sku = cleanValues[0].toUpperCase();
+
+                    
+
+                    data[sku] = {
+
+                        nombre: cleanValues[1],
+
+                        stock_inicial: parseInt(cleanValues[3], 10) || 0, 
+
+                        stock_vendido: parseInt(cleanValues[4], 10) || 0, 
+
+                        precio_venta: parseFloat(cleanValues[5]) || 0.00
+
+                    };
+
+                }
+
+            }
+
+            return data;
+
+        }
+
+
+
+        /**
+
+         * Carga el inventario de localStorage.
+
+         * Decide si mostrar la aplicación o el formulario de carga.
+
+         */
+
+        function cargarInventario() {
+
+            const storedData = localStorage.getItem(STORAGE_KEY);
+
+            
+
+            if (storedData) {
+
+                try {
+
+                    inventario = JSON.parse(storedData);
+
+                    // Si se carga algo, mostrar la app
+
+                    if (Object.keys(inventario).length > 0) {
+
+                        mostrarMensaje('Inventario cargado desde la última sesión.', 'success');
+
+                        toggleAppView(true); 
+
+                        renderizarTabla();
+
+                        renderizarTablaVentas();
+
+                        // Llamada con setTimeout para que Canvas tenga dimensiones correctas
+
+                        setTimeout(() => {
+
+                           dibujarCanvasReporte();
+
+                           dibujarPieChartVentas();
+
+                           // Re-renderizar iconos de Lucide (si no se hizo automáticamente)
+
+                           if (window.lucide) {
+
+                                window.lucide.createIcons();
+
+                            }
+
+                        }, 50); 
+
+                        return;
+
+                    }
+
+                } catch (e) {
+
+                    console.error("Error al parsear localStorage:", e);
+
+                    // Ignorar error de JSON y forzar la carga por archivo
+
+                }
+
+            }
+
+            // Si no hay datos válidos, mostrar el formulario de carga
+
+            mostrarMensajeCarga('Por favor, carga un archivo CSV para iniciar el inventario.', 'error');
+
+            toggleAppView(false);
+
+        }
+
+
+
+        /**
+
+         * Maneja el evento de selección de archivo CSV.
+
+         */
+
+        function handleFileSelect(event) {
+
+            const file = event.target.files[0];
+
+            if (!file) return;
+
+
+
+            // Mostrar nombre del archivo
+
+            mostrarMensajeCarga(`Archivo seleccionado: ${file.name}. Procesando...`, 'success');
+
+
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+
+                const csvContent = e.target.result;
+
+                
+
+                // 1. Parsear el nuevo contenido CSV
+
+                const newInventory = parsearCSV(csvContent);
+
+                
+
+                if (Object.keys(newInventory).length === 0) {
+
+                    mostrarMensajeCarga('El archivo CSV está vacío o el formato es incorrecto.', 'error');
+
+                    return;
+
+                }
+
+
+
+                // 2. Sobrescribir el inventario, guardar y actualizar UI
+
+                inventario = newInventory;
+
+                guardarInventario();
+
+
+
+                mostrarMensaje(`¡Inventario cargado exitosamente! ${Object.keys(inventario).length} productos inicializados.`, 'success');
+
+                
+
+                toggleAppView(true); // Mostrar aplicación principal primero
+
+                
+
+                renderizarTabla();
+
+                renderizarTablaVentas();
+
+                // Llamada con setTimeout para que Canvas tenga dimensiones correctas
+
+                setTimeout(() => {
+
+                    dibujarCanvasReporte();
+
+                    dibujarPieChartVentas();
+
+                    // Re-renderizar iconos de Lucide
+
+                    if (window.lucide) {
+
+                        window.lucide.createIcons();
+
+                    }
+
+                }, 50); 
+
+            };
+
+            reader.onerror = function() {
+
+                mostrarMensajeCarga('Error al leer el archivo.', 'error');
+
+            };
+
+            reader.readAsText(file);
+
+        }
+
+        
+
+        /**
+
+         * Alterna la visibilidad entre la carga del archivo y la aplicación principal.
+
+         */
+
+        function toggleAppView(isLoaded) {
+
+            const mainContent = document.getElementById('main-app-content');
+
+            const fileSection = document.getElementById('file-upload-card');
+
+
+
+            if (isLoaded && Object.keys(inventario).length > 0) {
+
+                fileSection.classList.add('hidden');
+
+                mainContent.classList.remove('hidden');
+
+            } else {
+
+                fileSection.classList.remove('hidden');
+
+                mainContent.classList.add('hidden');
+
+            }
+
+        }
+
+
+
+        /**
+
+         * Guarda el objeto inventario en localStorage.
+
+         */
+
+        function guardarInventario() {
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(inventario));
+
+        }
+
+
+
+        // --- LÓGICA DE NEGOCIO ---
+
+
+
+        /**
+
+         * Calcula el stock disponible para un SKU dado.
+
+         */
+
+        function calcularStockDisponible(sku) {
+
+            const p = inventario[sku];
+
+            return p ? p.stock_inicial - p.stock_vendido : 0;
+
+        }
+
+
+
+        /**
+
+         * Busca y muestra la información del producto en el área de consulta.
+
+         */
+
+        function consultarProducto(sku) {
+
+            const p = inventario[sku];
+
+            const resultadoDiv = document.getElementById('consulta-resultado');
+
+            
+
+            if (!sku) {
+
+                 resultadoDiv.innerHTML = '<p class="text-gray-500">Consulta el estado del producto ingresando un SKU.</p>';
+
+                 return null;
+
+            }
+
+
+
+            if (!p) {
+
+                resultadoDiv.innerHTML = `<p class="text-red-600 font-semibold">❌ SKU <b>${sku}</b> no encontrado en el inventario.</p>`;
+
+                return null;
+
+            }
+
+
+
+            const stockDisponible = calcularStockDisponible(sku);
+
+            const stockColor = stockDisponible <= 5 ? 'text-red-600' : 'text-[#577161]';
+
+
+
+            resultadoDiv.innerHTML = `
+
+                <p><b>Producto:</b> <span class="text-gray-900">${p.nombre}</span></p>
+
+                <p><b>Precio:</b> <span class="text-gray-900">$${p.precio_venta.toFixed(2)}</span></p>
+
+                <p><b>Stock Disponible:</b> <span class="${stockColor} font-bold text-lg">${stockDisponible} Unidades</span></p>
+
+            `;
+
+            return p;
+
+        }
+
+
+
+        /**
+
+         * Registra una venta, actualiza el stock, guarda y renderiza la vista.
+
+         */
+
+        function registrarVenta(sku) {
+
+            const p = inventario[sku];
+
+            
+
+            if (!p) {
+
+                mostrarMensaje(`ERROR: SKU ${sku} no existe.`, 'error');
+
+                return;
+
+            }
+
+
+
+            const stockActual = calcularStockDisponible(sku);
+
+
+
+            if (stockActual <= 0) {
+
+                mostrarMensaje(`⛔ VENTA BLOQUEADA: ${p.nombre} agotado. Stock: 0.`, 'error');
+
+                return;
+
+            }
+
+
+
+            // Actualizar stock
+
+            p.stock_vendido += 1;
+
+            guardarInventario();
+
+            
+
+            const nuevoStock = calcularStockDisponible(sku);
+
+            mostrarMensaje(`🎉 Venta de ${p.nombre} registrada. Stock restante: ${nuevoStock}.`, 'success');
+
+            
+
+            // Actualizar vistas de consulta, tablas y gráficos
+
+            consultarProducto(sku);
+
+            renderizarTabla();
+
+            renderizarTablaVentas();
+
+            dibujarCanvasReporte(); 
+
+            dibujarPieChartVentas();
+
+        }
+
+
+
+        /**
+
+         * Maneja la entrada del SKU y lanza la venta al presionar el botón o Enter.
+
+         */
+
+        function registrarVentaDesdeInput() {
+
+            const input = document.getElementById('sku-input');
+
+            const sku = input.value.trim().toUpperCase();
+
+            
+
+            if (!sku) {
+
+                mostrarMensaje('Por favor, ingresa un SKU válido.', 'error');
+
+                return;
+
+            }
+
+
+
+            registrarVenta(sku);
+
+            input.value = ''; // Limpiar campo después de la venta
+
+        }
+
+
+
+        // Escuchar la tecla Enter en el campo de texto para la venta rápida
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const input = document.getElementById('sku-input');
+
+            if (input) {
+
+                // Listener para confirmar venta al presionar Enter
+
+                input.addEventListener('keydown', (event) => {
+
+                    if (event.key === 'Enter') {
+
+                        event.preventDefault(); // Evitar el envío del formulario
+
+                        registrarVentaDesdeInput();
+
+                    }
+
+                });
+
+                
+
+                // NUEVO: Implementación de la búsqueda automática/consulta en tiempo real (evento 'input')
+
+                input.addEventListener('input', (event) => {
+
+                    const sku = event.target.value.trim().toUpperCase();
+
+                    consultarProducto(sku);
+
+                });
+
+            }
+
+        });
+
+
+
+
+
+        // --- FUNCIONES DE RENDERIZADO Y CANVAS ---
+
+        
+
+        /**
+
+         * Genera colores de la paleta para el Pie Chart.
+
+         */
+
+        function getRandomColor(index) {
+
+            // Paleta de colores más moderna y coherente con el esquema verde/gris/marrón
+
+            const colors = [
+
+                '#577161', // Verde Olivo Oscuro
+
+                '#A5C9B3', // Verde Claro
+
+                '#86736F', // Taupe/Marrón Grisáceo
+
+                '#8B959A', // Gris Medio
+
+                '#3C3231', // Marrón Espresso
+
+                '#6D797C', // Gris Oscuro
+
+                '#88A796', // Verde Medio
+
+            ];
+
+            return colors[index % colors.length];
+
+        }
+
+
+
+        /**
+
+         * Dibuja un gráfico circular (Pie Chart) que refleja la distribución de ingresos por producto
+
+         * y genera la leyenda en un contenedor HTML separado.
+
+         */
+
+        function dibujarPieChartVentas() {
+
+            const canvas = document.getElementById('ventasPieCanvas');
+
+            const totalRevenueEl = document.getElementById('total-revenue-amount'); // Modificado para el nuevo ID
+
+            const ticketPromedioEl = document.getElementById('ticket-promedio-amount'); // Nuevo elemento
+
+            const legendContainer = document.getElementById('pie-legend-container');
+
+            
+
+            if (!canvas || !totalRevenueEl || !ticketPromedioEl || !legendContainer) return;
+
+
+
+            const ctx = canvas.getContext('2d');
+
+            
+
+            // Usar getBoundingClientRect del contenedor padre del canvas para calcular el tamaño real
+
+            const containerRect = canvas.parentElement.getBoundingClientRect();
+
+            // Estimamos el ancho para el gráfico (excluyendo el área de la leyenda)
+
+            const canvasWidth = containerRect.width;
+
+            const canvasHeight = canvas.height; 
+
+            
+
+            // Asegurar dimensiones correctas en el atributo del canvas
+
+            canvas.width = canvasWidth;
+
+            canvas.height = canvasHeight;
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            legendContainer.innerHTML = ''; // Limpiar leyenda HTML
+
+
+
+            const salesData = Object.keys(inventario)
+
+                .map(sku => ({
+
+                    nombre: inventario[sku].nombre,
+
+                    revenue: inventario[sku].stock_vendido * inventario[sku].precio_venta,
+
+                    items_sold: inventario[sku].stock_vendido
+
+                }))
+
+                .filter(item => item.revenue > 0);
+
+
+
+            const totalRevenue = salesData.reduce((sum, item) => sum + item.revenue, 0);
+
+            
+
+            // --------------------------------------------------------
+
+            // 1. CÁLCULO DE MÉTRICAS CLAVE
+
+            // --------------------------------------------------------
+
+            const totalItemsSold = salesData.reduce((sum, item) => sum + item.items_sold, 0);
+
+
+
+            let ticketPromedio = 0;
+
+            if (totalItemsSold > 0) {
+
+                // Fórmula: Ingreso Total / Número de Transacciones (Unidades Vendidas)
+
+                ticketPromedio = totalRevenue / totalItemsSold; 
+
+            }
+
+
+
+            // --------------------------------------------------------
+
+            // 2. ACTUALIZACIÓN DEL DOM DE MÉTRICAS
+
+            // --------------------------------------------------------
+
+            totalRevenueEl.textContent = `$${totalRevenue.toFixed(2)}`;
+
+            ticketPromedioEl.textContent = `$${ticketPromedio.toFixed(2)}`;
+
+            
+
+            // Manejo de caso sin ventas para el Canvas
+
+            if (salesData.length === 0 || totalRevenue <= 0) {
+
+                // Reiniciar visualizaciones a cero
+
+                totalRevenueEl.textContent = '$0.00';
+
+                ticketPromedioEl.textContent = '$0.00';
+
+                
+
+                legendContainer.innerHTML = '<p class="text-gray-500 text-center">Sin ventas registradas.</p>';
+
+                
+
+                // Dibujar un mensaje de placeholder en el canvas
+
+                ctx.fillStyle = '#F0F0F0';
+
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                ctx.fillStyle = '#9ca3af';
+
+                ctx.textAlign = 'center';
+
+                ctx.font = '16px Inter';
+
+                ctx.fillText('Sin datos de ventas', canvasWidth / 2, canvasHeight / 2);
+
+                return;
+
+            }
+
+
+
+            // --------------------------------------------------------
+
+            // 3. DIBUJO DEL GRÁFICO CIRCULAR
+
+            // --------------------------------------------------------
+
+
+
+            // Calcular el espacio real que debe ocupar el gráfico circular
+
+            const graphContainerWidth = canvasWidth; 
+
+            const centerX = graphContainerWidth * 0.45; // Centrar un poco a la izquierda 
+
+            const centerY = canvasHeight / 2;
+
+            const radius = Math.max(0, Math.min(centerX, centerY) - 10); 
+
+            
+
+            if (radius === 0) return; 
+
+
+
+            let currentAngle = 0;
+
+            
+
+            // --- DIBUJAR GRÁFICO ---
+
+            salesData.forEach((item, index) => {
+
+                const sliceAngle = (item.revenue / totalRevenue) * 2 * Math.PI;
+
+                if (!isFinite(sliceAngle)) return; 
+
+                
+
+                const startAngle = currentAngle;
+
+                const endAngle = currentAngle + sliceAngle;
+
+                const color = getRandomColor(index);
+
+                const percentage = (item.revenue / totalRevenue) * 100;
+
+                
+
+                // Draw Pie Slice
+
+                ctx.beginPath();
+
+                ctx.moveTo(centerX, centerY);
+
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle); 
+
+                ctx.closePath();
+
+                ctx.fillStyle = color;
+
+                ctx.fill();
+
+
+
+                // Draw Slice Border
+
+                ctx.strokeStyle = '#F7F7F7';
+
+                ctx.lineWidth = 2;
+
+                ctx.stroke();
+
+
+
+                // Draw Percentage Label (only for slices > 5%)
+
+                const midAngle = startAngle + sliceAngle / 2;
+
+                const labelRadius = radius * 0.8;
+
+                const labelX = centerX + labelRadius * Math.cos(midAngle);
+
+                const labelY = centerY + labelRadius * Math.sin(midAngle);
+
+                
+
+                if (percentage > 5) {
+
+                    ctx.fillStyle = 'white';
+
+                    ctx.font = 'bold 12px Inter';
+
+                    ctx.textAlign = 'center';
+
+                    ctx.fillText(`${percentage.toFixed(0)}%`, labelX, labelY);
+
+                }
+
+
+
+                // --- CREAR LEYENDA HTML (para el contenedor de la derecha) ---
+
+                const legendItem = document.createElement('div');
+
+                legendItem.className = 'flex items-center justify-between text-gray-700';
+
+                legendItem.innerHTML = `
+
+                    <div class="flex items-center">
+
+                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${color};"></span>
+
+                        <span class="truncate">${item.nombre}</span>
+
+                    </div>
+
+                    <span class="font-semibold text-[#577161]">${percentage.toFixed(1)}%</span>
+
+                `;
+
+                legendContainer.appendChild(legendItem);
+
+
+
+                currentAngle = endAngle;
+
+            });
+
+        }
+
+
+
+        /**
+
+         * Dibuja un gráfico de barras simple en el elemento CANVAS (Stock Disponible).
+
+         */
+
+        function dibujarCanvasReporte() {
+
+            const canvas = document.getElementById('stockCanvas');
+
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            
+
+            const canvasWidth = canvas.clientWidth;
+
+            const canvasHeight = canvas.clientHeight;
+
+
+
+            // Seguridad: Verificar que el canvas tiene un tamaño visible antes de dibujar
+
+            if (canvasWidth === 0 || canvasHeight === 0) {
+
+                console.warn("Canvas no visible o dimensiones 0 al intentar dibujar.");
+
+                return; 
+
+            }
+
+
+
+            canvas.width = canvasWidth;
+
+            canvas.height = canvasHeight;
+
+            
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            
+
+            const skus = Object.keys(inventario);
+
+            if (skus.length === 0) return;
+
+
+
+            const data = skus.map(sku => ({
+
+                sku: sku,
+
+                stock: calcularStockDisponible(sku)
+
+            }));
+
+            
+
+            const margin = 15;
+
+            const labelMargin = 25; 
+
+            const plotHeight = canvasHeight - margin * 2 - labelMargin;
+
+            const plotWidth = canvasWidth - margin * 2;
+
+            const maxStock = Math.max(...data.map(d => d.stock), 1); 
+
+
+
+            ctx.font = '11px Inter';
+
+            ctx.textAlign = 'center';
+
+            
+
+            const totalItems = data.length;
+
+            const barWidth = (plotWidth / totalItems) * 0.6; 
+
+            const spacing = (plotWidth / totalItems) * 0.4; 
+
+
+
+            data.forEach((item, index) => {
+
+                const x = margin + index * (barWidth + spacing) + spacing / 2;
+
+                // Asegurar que la altura es al menos 1px si hay stock para visibilidad
+
+                const rawBarHeight = (item.stock / maxStock) * plotHeight;
+
+                const barHeight = item.stock > 0 ? Math.max(1, rawBarHeight) : 0;
+
+                
+
+                // Dibujar barra
+
+                const color = item.stock <= 5 ? '#EF4444' : '#577161'; /* Rojo de advertencia vs. Verde primario */
+
+                ctx.fillStyle = color;
+
+                ctx.fillRect(x, canvasHeight - margin - labelMargin - barHeight, barWidth, barHeight);
+
+                
+
+                // Dibujar valor (stock)
+
+                ctx.fillStyle = '#3C3231';
+
+                ctx.font = 'bold 12px Inter';
+
+                ctx.fillText(item.stock, x + barWidth / 2, canvasHeight - margin - labelMargin - barHeight - 5);
+
+                
+
+                // Dibujar etiqueta (SKU)
+
+                ctx.fillStyle = '#6D797C';
+
+                ctx.font = '11px Inter';
+
+                ctx.fillText(item.sku, x + barWidth / 2, canvasHeight - margin - 5);
+
+            });
+
+
+
+            // Dibujar eje X (línea base)
+
+            ctx.beginPath();
+
+            ctx.moveTo(margin, canvasHeight - margin - labelMargin);
+
+            ctx.lineTo(canvasWidth - margin, canvasHeight - margin - labelMargin);
+
+            ctx.strokeStyle = '#D1D5DB';
+
+            ctx.lineWidth = 1;
+
+            ctx.stroke();
+
+        }
+
+
+
+        /**
+
+         * Renderiza la tabla de productos vendidos (ahora más compacta).
+
+         */
+
+        function renderizarTablaVentas() {
+
+            const tbody = document.querySelector('#ventas-tabla tbody');
+
+            if (!tbody) return;
+
+            tbody.innerHTML = ''; 
+
+            
+
+            const skus = Object.keys(inventario);
+
+
+
+            skus.forEach(sku => {
+
+                const p = inventario[sku];
+
+                const vendidos = p.stock_vendido;
+
+                
+
+                if (vendidos > 0) {
+
+                    const revenue = vendidos * p.precio_venta;
+
+
+
+                    const row = tbody.insertRow();
+
+                    row.classList.add('hover:bg-gray-100');
+
+
+
+                    // Celdas (solo Producto, Cant. y Total)
+
+                    row.insertCell().textContent = p.nombre;
+
+                    
+
+                    const vendidosCell = row.insertCell();
+
+                    vendidosCell.textContent = vendidos;
+
+                    vendidosCell.classList.add('text-right');
+
+
+
+                    // Columna Total
+
+                    const totalCell = row.insertCell();
+
+                    totalCell.innerHTML = `<span class="font-bold text-[#577161]">$${revenue.toFixed(2)}</span>`;
+
+                    totalCell.classList.add('text-right');
+
+                    
+
+                    // Aplicar estilos de Tailwind a las celdas
+
+                    Array.from(row.cells).forEach(cell => cell.classList.add('px-3', 'py-2', 'whitespace-nowrap', 'text-sm'));
+
+                }
+
+            });
+
+        }
+
+
+
+        /**
+
+         * Renderiza la tabla de inventario en el HTML.
+
+         */
+
+        function renderizarTabla() {
+
+            const tbody = document.querySelector('#inventario-tabla tbody');
+
+            if (!tbody) return;
+
+            tbody.innerHTML = ''; 
+
+            const skus = Object.keys(inventario);
+
+            const emptyMessage = document.getElementById('empty-message');
+
+
+
+            if (skus.length === 0) {
+
+                emptyMessage.classList.remove('hidden');
+
+                return;
+
+            }
+
+            emptyMessage.classList.add('hidden');
+
+
+
+            skus.forEach(sku => {
+
+                const p = inventario[sku];
+
+                const stockDisponible = calcularStockDisponible(sku);
+
+                
+
+                const row = tbody.insertRow();
+
+                
+
+                // Estilo de fila según el stock
+
+                if (stockDisponible <= 5 && stockDisponible > 0) {
+
+                    row.classList.add('bg-yellow-50', 'hover:bg-yellow-100'); 
+
+                } else if (stockDisponible === 0) {
+
+                     row.classList.add('bg-red-50', 'hover:bg-red-100'); 
+
+                } else {
+
+                    row.classList.add('hover:bg-gray-50');
+
+                }
+
+
+
+                // Celdas
+
+                row.insertCell().textContent = sku;
+
+                row.insertCell().textContent = p.nombre;
+
+                
+
+                const inicialCell = row.insertCell();
+
+                inicialCell.textContent = p.stock_inicial;
+
+                inicialCell.classList.add('text-right');
+
+                
+
+                const vendidoCell = row.insertCell();
+
+                vendidoCell.textContent = p.stock_vendido;
+
+                vendidoCell.classList.add('text-right');
+
+                
+
+                // Columna de Stock Disponible (resaltada)
+
+                const dispCell = row.insertCell();
+
+                const stockColor = stockDisponible <= 5 ? 'text-red-600' : 'text-[#577161]';
+
+                dispCell.innerHTML = `<span class="font-bold ${stockColor} text-base">${stockDisponible}</span>`;
+
+                dispCell.classList.add('text-right');
+
+                
+
+                const precioCell = row.insertCell();
+
+                precioCell.textContent = `$${p.precio_venta.toFixed(2)}`;
+
+                precioCell.classList.add('text-right');
+
+                
+
+                // Aplicar estilos de Tailwind a las celdas
+
+                Array.from(row.cells).forEach(cell => cell.classList.add('px-6', 'py-3', 'whitespace-nowrap', 'text-sm'));
+
+            });
+
+        }
+
+
+
+        /**
+
+         * Muestra un mensaje temporal en el área de Venta/Consulta.
+
+         */
+
+        function mostrarMensaje(texto, tipo) {
+
+            const div = document.getElementById('mensaje');
+
+            if (!div) return;
+
+            div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;
+
+            div.textContent = texto;
+
+            
+
+            setTimeout(() => {
+
+                div.textContent = '';
+
+                div.className = 'message-box mt-5 p-4 rounded-xl font-medium';
+
+            }, 3500);
+
+        }
+
+        
+
+        /**
+
+         * Muestra un mensaje temporal en el área de Carga de Archivo.
+
+         */
+
+        function mostrarMensajeCarga(texto, tipo) {
+
+            const div = document.getElementById('mensaje-carga');
+
+            if (!div) return;
+
+            div.className = `message-box mt-5 p-4 rounded-xl font-medium transition duration-300 ${tipo}`;
+
+            div.textContent = texto;
+
+            
+
+            setTimeout(() => {
+
+                div.textContent = '';
+
+                div.className = 'message-box mt-5 p-4 rounded-xl font-medium';
+
+            }, 5000);
+
+        }
+
+        
+
+        // --- FUNCIONES DE MODAL DE CONTRASEÑA Y EXPORTACIÓN ---
+
+
+
+        /**
+
+         * Muestra el modal para solicitar la contraseña antes de exportar.
+
+         */
+
+        function mostrarModalContrasena() {
+
+            const modal = document.getElementById('password-modal');
+
+            const passwordInput = document.getElementById('password-input');
+
+            const errorMessage = document.getElementById('modal-error-message');
+
+            
+
+            if (Object.keys(inventario).length === 0) {
+
+                mostrarMensaje('No hay datos en el inventario para exportar.', 'error');
+
+                return;
+
+            }
+
+            
+
+            errorMessage.classList.add('hidden');
+
+            passwordInput.value = '';
+
+            modal.classList.remove('hidden');
+
+        }
+
+
+
+        /**
+
+         * Oculta el modal de contraseña.
+
+         */
+
+        function ocultarModalContrasena() {
+
+            const modal = document.getElementById('password-modal');
+
+            modal.classList.add('hidden');
+
+        }
+
+
+
+        /**
+
+         * Verifica la contraseña e inicia la exportación.
+
+         */
+
+        function verificarContrasenaExportar() {
+
+            const passwordInput = document.getElementById('password-input');
+
+            const enteredPassword = passwordInput.value.trim();
+
+            const errorMessage = document.getElementById('modal-error-message');
+
+            
+
+            if (enteredPassword === CORRECT_PASSWORD) {
+
+                ocultarModalContrasena();
+
+                exportarInventarioPDF();
+
+            } else {
+
+                errorMessage.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';
+
+                errorMessage.classList.remove('hidden');
+
+                passwordInput.value = '';
+
+                passwordInput.focus();
+
+            }
+
+        }
+
+        
+
+        /**
+
+         * Genera un reporte PDF de la tabla de inventario *directamente*
+
+         * utilizando jsPDF y el plugin AutoTable para calidad vectorial.
+
+         */
+
+        function exportarInventarioPDF() {
+
+            // Usamos la librería window.jspdf ya cargada
+
+            const { jsPDF } = window.jspdf;
+
+            
+
+            mostrarMensaje('Generando reporte PDF vectorial... Por favor espera.', 'success');
+
+
+
+            // 1. Inicializar jsPDF
+
+            const doc = new jsPDF('p', 'mm', 'a4'); // 'p' = portrait, 'mm' = milimetros
+
+
+
+            // 2. Título y Metadatos (Vectoriales)
+
+            doc.setFontSize(18);
+
+            doc.text("Reporte de Inventario SKU en Tiempo Real", 105, 15, null, null, "center");
+
+            
+
+            doc.setFontSize(10);
+
+            doc.text(`Fecha de Exportación: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 10, 25);
+
+            
+
+            // 3. Preparar Datos para AutoTable
+
+            const headers = [
+
+                ['SKU', 'Nombre', 'Stock Inicial', 'Vendido', 'Stock Disponible', 'Precio Venta']
+
+            ];
+
+            
+
+            const tableData = Object.keys(inventario).map(sku => {
+
+                const p = inventario[sku];
+
+                const stockDisponible = calcularStockDisponible(sku);
+
+                
+
+                // Formatear el precio con el símbolo $
+
+                const precioFormateado = `$${p.precio_venta.toFixed(2)}`;
+
+                
+
+                return [
+
+                    sku, 
+
+                    p.nombre, 
+
+                    p.stock_inicial, 
+
+                    p.stock_vendido, 
+
+                    stockDisponible,
+
+                    precioFormateado
+
+                ];
+
+            });
+
+
+
+            // 4. Generar la tabla usando AutoTable
+
+            // Nota: El plugin autotable (ya cargado) se adjunta a la instancia de jspdf.
+
+            doc.autoTable({
+
+                startY: 35, // Comenzar debajo del encabezado
+
+                head: headers,
+
+                body: tableData,
+
+                theme: 'striped', // Un tema limpio y profesional
+
+                styles: { 
+
+                    fontSize: 9,
+
+                    cellPadding: 3,
+
+                    halign: 'center' // Centrar el contenido de las celdas por defecto
+
+                },
+
+                headStyles: {
+
+                    fillColor: [87, 113, 97], // #577161 - Nuestro color primario verde
+
+                    textColor: [255, 255, 255],
+
+                    fontStyle: 'bold'
+
+                },
+
+                columnStyles: {
+
+                    // Sobrescribir la alineación para las columnas de texto y números
+
+                    0: { halign: 'left', cellWidth: 20 }, // SKU
+
+                    1: { halign: 'left', cellWidth: 45 }, // Nombre
+
+                    2: { halign: 'right' }, // Stock Inicial
+
+                    3: { halign: 'right' }, // Vendido
+
+                    4: { halign: 'right', fontStyle: 'bold' }, // Disponible (resaltado)
+
+                    5: { halign: 'right' } // Precio Venta
+
+                },
+
+                didDrawPage: function (data) {
+
+                    // Pie de página (ej. número de página)
+
+                    doc.setFontSize(8);
+
+                    const pageCount = doc.internal.getNumberOfPages();
+
+                    doc.text("Página " + doc.internal.getCurrentPageInfo().pageNumber + " de " + pageCount, data.settings.margin.left, doc.internal.pageSize.height - 5);
+
+                }
+
+            });
+
+
+
+            // 5. Descargar el PDF
+
+            doc.save(`Reporte_Inventario_Vectorial_${new Date().toISOString().slice(0, 10)}.pdf`);
+
+            mostrarMensaje('✅ Reporte PDF generado y descargado (Calidad Vectorial).', 'success');
+
+        }
+
+
+
+
+
+        // --- INICIALIZACIÓN ---
+
+        window.onload = () => {
+
+            // 1. Asignar el listener de cambio al input de archivo
+
+            const fileInput = document.getElementById('csv-file-input');
+
+            if (fileInput) {
+
+                fileInput.addEventListener('change', handleFileSelect);
+
+            }
+
+            
+
+            // 2. Intentar cargar el inventario guardado (llama a render/draw si tiene éxito)
+
+            cargarInventario();
+
+            
+
+            // 3. Configurar evento de resize 
+
+            window.addEventListener('resize', () => {
+
+                dibujarCanvasReporte();
+
+                dibujarPieChartVentas();
+
+            });
+
+        };
+
+    </script>
+
 </body>
+
 </html>
-
-
-
